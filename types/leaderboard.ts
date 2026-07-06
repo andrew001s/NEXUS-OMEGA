@@ -3,7 +3,9 @@ export interface LeaderboardPlayer {
   playerName: string
   score: number
   level: number
+  completedLevels: number
   createdAt: number
+  updatedAt: number
 }
 
 export interface LeaderboardResponse {
