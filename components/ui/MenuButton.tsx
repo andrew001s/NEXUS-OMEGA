@@ -8,6 +8,7 @@ interface MenuButtonProps {
   variant?: 'primary' | 'secondary'
   disabled?: boolean
   onClick?: () => void
+  onHover?: () => void
   className?: string
 }
 
@@ -16,6 +17,7 @@ export function MenuButton({
   variant = 'primary',
   disabled,
   onClick,
+  onHover,
   className = '',
 }: MenuButtonProps) {
   const isDisabled = disabled
@@ -73,6 +75,7 @@ export function MenuButton({
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
       onClick={onClick}
+      onMouseEnter={onHover}
       style={{ fontFamily: '"Courier New", monospace', imageRendering: 'pixelated' }}
     >
       {children}

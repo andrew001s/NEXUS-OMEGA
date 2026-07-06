@@ -9,6 +9,7 @@ import { Modal } from '@/components/ui/Modal'
 import { GameLogo } from '@/components/game/GameLogo'
 import { Footer } from '@/components/game/Footer'
 import { useGameSave } from '@/hooks/useGameSave'
+import { useAudio } from '@/hooks/useAudio'
 import { LeaderboardTable } from '@/components/leaderboard/LeaderboardTable'
 import { LeaderboardSearch } from '@/components/leaderboard/LeaderboardSearch'
 import { LeaderboardPagination } from '@/components/leaderboard/LeaderboardPagination'
@@ -21,30 +22,35 @@ export function MainMenu() {
   const router = useRouter()
   const { hasSave, save } = useGameSave()
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false)
+  const { playSFX, initAudio } = useAudio()
 
   const leaderboard = useLeaderboard()
 
   const handleNewGame = useCallback(() => {
+    playSFX('confirm')
     router.push('/game')
-  }, [router])
+  }, [router, playSFX])
 
   const handleContinue = useCallback(() => {
     if (!hasSave || !save) return
+    playSFX('confirm')
     const params = new URLSearchParams({
       level: String(save.level),
       progress: String(save.progress),
       character: save.character,
     })
     router.push(`/game?${params.toString()}`)
-  }, [hasSave, save, router])
+  }, [hasSave, save, router, playSFX])
 
   const handleOpenLeaderboard = useCallback(() => {
+    playSFX('click')
     setIsLeaderboardOpen(true)
-  }, [])
+  }, [playSFX])
 
   const handleCloseLeaderboard = useCallback(() => {
+    playSFX('back')
     setIsLeaderboardOpen(false)
-  }, [])
+  }, [playSFX])
 
   const menuItems = [
     {
@@ -97,6 +103,7 @@ export function MainMenu() {
                   variant={item.variant}
                   disabled={item.disabled}
                   onClick={item.onClick}
+                  onHover={() => playSFX('hover')}
                 >
                   <span className="flex items-center gap-3">
                     <item.icon
