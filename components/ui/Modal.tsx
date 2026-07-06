@@ -36,7 +36,7 @@ export function Modal({ isOpen, onClose, title, children, ariaLabel }: ModalProp
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <motion.div
-            className="absolute inset-0 bg-black/85"
+            className="absolute inset-0 bg-[#030302]/94"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -49,28 +49,45 @@ export function Modal({ isOpen, onClose, title, children, ariaLabel }: ModalProp
             role="dialog"
             aria-modal="true"
             aria-label={ariaLabel ?? title}
-            className="relative w-[75vw] h-[80vh] max-w-5xl max-h-[900px] overflow-hidden border-2 border-green-700/40 bg-gradient-to-b from-green-950 to-black shadow-2xl shadow-green-900/25"
-            style={{ imageRendering: 'pixelated' }}
+            className="relative w-[75vw] h-[80vh] max-w-5xl max-h-[900px] overflow-hidden border-[3px] border-[#786544] bg-[#0f0d09] shadow-[0_24px_80px_rgba(0,0,0,0.9)]"
+            style={{
+              imageRendering: 'pixelated',
+              backgroundImage:
+                'linear-gradient(rgba(255,255,255,0.02), rgba(255,255,255,0.02)), repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.015) 0 2px, transparent 2px 6px), repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.012) 0 2px, transparent 2px 6px)',
+              backgroundColor: '#0f0d09',
+            }}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
           >
             <div
-              className="flex items-center justify-between px-5 py-3 bg-green-950/90 border-b-2 border-green-700/40"
-              style={{ imageRendering: 'pixelated' }}
+              className="flex items-center justify-between px-5 py-3 bg-[#1d1812] border-b-[3px] border-[#786544]"
+              style={{
+                imageRendering: 'pixelated',
+                backgroundImage:
+                  'linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 100%), linear-gradient(rgba(255,255,255,0.02), rgba(255,255,255,0.02))',
+              }}
             >
               <h2
-                className="text-sm font-bold tracking-[0.25em] uppercase text-green-400"
-                style={{ fontFamily: '"Courier New", monospace', imageRendering: 'pixelated' }}
+                className="text-sm font-bold tracking-[0.22em] uppercase text-[#f2e4c1]"
+                style={{
+                  fontFamily: '"Courier New", monospace',
+                  imageRendering: 'pixelated',
+                  textShadow: '2px 2px 0 #0b0907',
+                }}
               >
                 {title}
               </h2>
               <button
                 onClick={onClose}
-                className="px-2 py-1 text-green-600 transition-colors hover:bg-green-900/60 hover:text-green-400 border-2 border-transparent hover:border-green-700/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-400 text-xs tracking-wider uppercase"
+                className="px-2 py-1 text-[#bca87a] transition-colors hover:bg-[#2a2319] hover:text-[#f2e4c1] border-2 border-transparent hover:border-[#8b7d5d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d8c08b] text-xs tracking-wider uppercase"
                 aria-label="Close modal"
-                style={{ fontFamily: '"Courier New", monospace', imageRendering: 'pixelated' }}
+                style={{
+                  fontFamily: '"Courier New", monospace',
+                  imageRendering: 'pixelated',
+                  textShadow: '1px 1px 0 #0b0907',
+                }}
               >
                 <X size={16} />
               </button>
@@ -78,7 +95,12 @@ export function Modal({ isOpen, onClose, title, children, ariaLabel }: ModalProp
 
             <div
               className="h-[calc(100%-53px)] overflow-y-auto p-5"
-              style={{ fontFamily: '"Courier New", monospace', imageRendering: 'pixelated' }}
+              style={{
+                fontFamily: '"Courier New", monospace',
+                imageRendering: 'pixelated',
+                backgroundImage:
+                  'radial-gradient(circle at top left, rgba(242, 228, 193, 0.03), transparent 35%), radial-gradient(circle at bottom right, rgba(139, 125, 93, 0.08), transparent 35%)',
+              }}
             >
               {children}
             </div>

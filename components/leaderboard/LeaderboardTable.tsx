@@ -10,25 +10,36 @@ interface LeaderboardTableProps {
 
 function LeaderboardTableComponent({ players }: LeaderboardTableProps) {
   return (
-    <div className="overflow-x-auto border-2 border-green-800/30 bg-green-950/40" style={{ imageRendering: 'pixelated' }}>
+    <div
+      className="overflow-x-auto border-[3px] border-[#6f6145] bg-[#18140f]"
+      style={{
+        imageRendering: 'pixelated',
+        backgroundImage:
+          'repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 6px), repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 6px)',
+      }}
+    >
       <table
         className="w-full border-collapse"
         role="table"
         aria-label="Leaderboard scores"
-        style={{ fontFamily: '"Courier New", monospace', imageRendering: 'pixelated' }}
+        style={{
+          fontFamily: '"Courier New", monospace',
+          imageRendering: 'pixelated',
+          textShadow: '1px 1px 0 #0b0907',
+        }}
       >
         <thead>
-          <tr className="bg-green-950/80">
-            <th className="py-3 px-4 text-green-400 font-bold tracking-wider uppercase text-xs border-b-2 border-green-700/50 border-r-2 border-green-800/20 w-14">
+          <tr className="bg-[#2a2319]">
+            <th className="py-3 px-4 text-[#f2e4c1] font-bold tracking-[0.22em] uppercase text-[10px] border-b-[3px] border-b-[#786544] border-r-[3px] border-r-[#4a3f2c] w-14">
               #
             </th>
-            <th className="py-3 px-4 text-green-400 font-bold tracking-wider uppercase text-xs border-b-2 border-green-700/50 border-r-2 border-green-800/20">
+            <th className="py-3 px-4 text-[#f2e4c1] font-bold tracking-[0.22em] uppercase text-[10px] border-b-[3px] border-b-[#786544] border-r-[3px] border-r-[#4a3f2c]">
               Jugador
             </th>
-            <th className="py-3 px-4 text-green-400 font-bold tracking-wider uppercase text-xs border-b-2 border-green-700/50 border-r-2 border-green-800/20 w-32 text-right">
+            <th className="py-3 px-4 text-[#f2e4c1] font-bold tracking-[0.22em] uppercase text-[10px] border-b-[3px] border-b-[#786544] border-r-[3px] border-r-[#4a3f2c] w-32 text-right">
               Puntos
             </th>
-            <th className="py-3 px-4 text-green-400 font-bold tracking-wider uppercase text-xs border-b-2 border-green-700/50 w-20 text-right">
+            <th className="py-3 px-4 text-[#f2e4c1] font-bold tracking-[0.22em] uppercase text-[10px] border-b-[3px] border-b-[#786544] w-20 text-right">
               Nivel
             </th>
           </tr>
