@@ -5,6 +5,15 @@ export interface Area {
   height: number
 }
 
+export interface InteractiveObjectVisualConfig {
+  resource?: string
+  transform?: string
+  transformOrigin?: string
+  fit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down'
+  opacity?: number
+  inset?: string
+}
+
 export interface InteractiveObjectConfig {
   id: string
   type: string
@@ -12,6 +21,7 @@ export interface InteractiveObjectConfig {
   area: Area
   unlockAfter: string | null
   activityId: string
+  visual?: InteractiveObjectVisualConfig
 }
 
 export interface DialogueLine {

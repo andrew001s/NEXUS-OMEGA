@@ -17,6 +17,7 @@ interface SceneElement {
 }
 
 interface SceneConfig {
+  backgroundImage?: string
   baseGradient: string
   accentColor: string
   elements: SceneElement[]
@@ -26,6 +27,7 @@ function generateScene(levelId: string): SceneConfig {
   switch (levelId) {
     case 'level-1':
       return {
+        backgroundImage: '/backgrounds/level1.png',
         baseGradient: 'linear-gradient(160deg, #040605 0%, #10140f 28%, #171812 58%, #0a0f0b 100%)',
         accentColor: 'rgba(183, 209, 103, 0.08)',
         elements: [
@@ -187,7 +189,13 @@ export function LevelBackground({ levelId }: LevelBackgroundProps) {
     <div className="absolute inset-0 overflow-hidden">
       <div
         className="absolute inset-0"
-        style={{ background: scene.baseGradient }}
+        style={{
+          background: scene.baseGradient,
+          backgroundImage: scene.backgroundImage ? `url(${scene.backgroundImage}), ${scene.baseGradient}` : scene.baseGradient,
+          backgroundSize: scene.backgroundImage ? 'cover, cover' : undefined,
+          backgroundPosition: scene.backgroundImage ? 'center center, center center' : undefined,
+          backgroundRepeat: scene.backgroundImage ? 'no-repeat, no-repeat' : undefined,
+        }}
       />
 
       {scene.elements.map((el, i) => (

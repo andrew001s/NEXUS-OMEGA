@@ -3,7 +3,7 @@ import type { LevelConfig } from '@/types/level'
 export const level1: LevelConfig = {
   id: 'level-1',
   title: 'Laboratorio del Movimiento',
-  background: '/backgrounds/laboratory-motion.png',
+  background: '/backgrounds/level1.png',
   character: 'kira',
   introduction: [
     {
@@ -47,9 +47,16 @@ export const level1: LevelConfig = {
       id: 'pizarra',
       type: 'interactive',
       title: 'Pizarra Cient\u00EDfica',
-      area: { x: 9, y: 34, width: 15, height: 24 },
+      area: { x: 0, y: 20.5, width: 25, height: 40 },
       unlockAfter: null,
       activityId: 'activity-01',
+      visual: {
+        resource: '/backgrounds/board.png',
+        transform: 'perspective(1400px) rotateY(30deg) rotateX(0deg) rotateZ(2deg) skewY(-1.5deg)',
+        transformOrigin: 'center center',
+        fit: 'cover',
+        opacity: 0.98,
+      },
     },
     {
       id: 'molino',
@@ -58,6 +65,10 @@ export const level1: LevelConfig = {
       area: { x: 29, y: 39, width: 13, height: 21 },
       unlockAfter: 'pizarra',
       activityId: 'activity-02',
+      visual: {
+        transform: 'perspective(1100px) rotateZ(-1.2deg) skewY(-0.4deg)',
+        transformOrigin: 'center center',
+      },
     },
     {
       id: 'rio',
@@ -66,6 +77,10 @@ export const level1: LevelConfig = {
       area: { x: 21, y: 63, width: 24, height: 15 },
       unlockAfter: 'molino',
       activityId: 'activity-03',
+      visual: {
+        transform: 'perspective(1100px) rotateZ(0.4deg) skewX(-0.3deg)',
+        transformOrigin: 'center center',
+      },
     },
     {
       id: 'robot',
@@ -74,6 +89,10 @@ export const level1: LevelConfig = {
       area: { x: 54, y: 37, width: 13, height: 23 },
       unlockAfter: 'rio',
       activityId: 'activity-04',
+      visual: {
+        transform: 'perspective(1000px) rotateZ(0.8deg) skewY(-0.2deg)',
+        transformOrigin: 'center center',
+      },
     },
     {
       id: 'terminal',
@@ -82,6 +101,10 @@ export const level1: LevelConfig = {
       area: { x: 74, y: 31, width: 17, height: 25 },
       unlockAfter: 'robot',
       activityId: 'activity-05',
+      visual: {
+        transform: 'perspective(1000px) rotateZ(-0.8deg) skewY(0.2deg)',
+        transformOrigin: 'center center',
+      },
     },
     {
       id: 'puerta',
@@ -90,6 +113,10 @@ export const level1: LevelConfig = {
       area: { x: 83, y: 17, width: 13, height: 29 },
       unlockAfter: 'terminal',
       activityId: 'activity-06',
+      visual: {
+        transform: 'perspective(1000px) rotateZ(0.5deg) skewX(0.2deg)',
+        transformOrigin: 'center center',
+      },
     },
   ],
 }
