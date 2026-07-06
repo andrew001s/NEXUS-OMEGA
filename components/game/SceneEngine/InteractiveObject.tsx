@@ -46,6 +46,7 @@ export function InteractiveObject({ config, unlocked, completed, onClick, hoverS
         backgroundColor: 'transparent',
         boxShadow: 'none',
         overflow: 'visible',
+        zIndex: visual?.zIndex ?? 1,
       }}
       initial={{ opacity: 0 }}
       animate={{
@@ -113,11 +114,6 @@ export function InteractiveObject({ config, unlocked, completed, onClick, hoverS
           {locked && hasResource && (
             <div
               className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  'radial-gradient(circle at 50% 45%, transparent 0 34%, rgba(0, 0, 0, 0.22) 64%, rgba(0, 0, 0, 0.34) 100%)',
-                boxShadow: 'inset 0 0 18px rgba(0, 0, 0, 0.4)',
-              }}
             />
           )}
 
