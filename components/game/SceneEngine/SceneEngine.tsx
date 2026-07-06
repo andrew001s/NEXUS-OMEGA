@@ -52,7 +52,6 @@ export function SceneEngine({ levelConfig, onLevelComplete }: SceneEngineProps) 
             config={obj}
             unlocked={state.phase === 'exploration' && helpers.isUnlocked(obj)}
             completed={state.completedObjects.has(obj.id)}
-            lockedBy={helpers.findLockedByTitle(obj)}
             onClick={() => handleObjectClick({ id: obj.id })}
           />
         ))}

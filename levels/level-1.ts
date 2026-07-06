@@ -64,12 +64,16 @@ export const level1: LevelConfig = {
       id: 'molino',
       type: 'interactive',
       title: 'Molino Experimental',
-      area: { x: 29, y: 39, width: 13, height: 21 },
+      area: { x: 25, y: 20, width: 20, height: 50 },
       unlockAfter: 'pizarra',
       activityId: 'activity-02',
       visual: {
+        resource: '/assets/level1/molino.png',
         transform: 'perspective(1100px) rotateZ(-1.2deg) skewY(-0.4deg)',
         transformOrigin: 'center center',
+        opacity: 1,
+        fit: 'cover',
+        className: INTERACTIVE_OBJECT_STYLES.hoverDefault,
       },
     },
     {
