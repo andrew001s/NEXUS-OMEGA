@@ -4,19 +4,34 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import type { InteractiveObjectConfig } from '@/types/level'
 
+export interface InteractiveHoverStyle {
+  borderColor?: string
+  boxShadow?: string
+  scale?: number
+}
+
+export const defaultInteractiveHover: InteractiveHoverStyle = {
+  borderColor: 'rgba(74, 222, 128, 0.6)',
+  boxShadow: '0 0 25px rgba(74, 222, 128, 0.15), inset 0 0 20px rgba(74, 222, 128, 0.05)',
+  scale: 1,
+}
+
 interface InteractiveObjectProps {
   config: InteractiveObjectConfig
   unlocked: boolean
   completed: boolean
   lockedBy: string | null
   onClick: () => void
+  hoverStyle?: Partial<InteractiveHoverStyle>
 }
 
-export function InteractiveObject({ config, unlocked, completed, lockedBy, onClick }: InteractiveObjectProps) {
+export function InteractiveObject({ config, unlocked, completed, lockedBy, onClick, hoverStyle }: InteractiveObjectProps) {
   if (completed) return null
 
   const visual = config.visual
   const hasResource = Boolean(visual?.resource)
+
+  const hover = { ...defaultInteractiveHover, ...hoverStyle }
 
   return (
     <motion.button
@@ -53,8 +68,9 @@ export function InteractiveObject({ config, unlocked, completed, lockedBy, onCli
       whileHover={
         unlocked
           ? {
-              borderColor: hasResource ? 'transparent' : 'rgba(74, 222, 128, 0.6)',
-              boxShadow: hasResource ? 'none' : '0 0 25px rgba(74, 222, 128, 0.15), inset 0 0 20px rgba(74, 222, 128, 0.05)',
+              borderColor: hasResource ? 'transparent' : hover.borderColor,
+              boxShadow: hasResource ? 'none' : hover.boxShadow,
+              scale: hover.scale,
             }
           : {}
       }
@@ -62,7 +78,7 @@ export function InteractiveObject({ config, unlocked, completed, lockedBy, onCli
     >
       <div className="relative h-full w-full overflow-visible">
         <div
-          className="absolute inset-0 overflow-hidden"
+          className={ `absolute inset-0 overflow-hidden ${visual?.className ?? ''}` }
           style={{
             inset: visual?.inset ?? '0',
             transform: visual?.transform ?? 'none',

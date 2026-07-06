@@ -12,6 +12,7 @@ export interface InteractiveObjectVisualConfig {
   fit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down'
   opacity?: number
   inset?: string
+  className?: string
 }
 
 export interface InteractiveObjectConfig {

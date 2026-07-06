@@ -1,3 +1,4 @@
+import { INTERACTIVE_OBJECT_STYLES } from '@/app/constants/styles/interactiveObjects'
 import type { LevelConfig } from '@/types/level'
 
 export const level1: LevelConfig = {
@@ -56,6 +57,7 @@ export const level1: LevelConfig = {
         transformOrigin: 'center center',
         fit: 'cover',
         opacity: 0.98,
+        className: INTERACTIVE_OBJECT_STYLES.hoverDefault,
       },
     },
     {
