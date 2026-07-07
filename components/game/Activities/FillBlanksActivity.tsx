@@ -82,14 +82,14 @@ export function FillBlanksActivity({ activity, onComplete }: { activity: Activit
 
   return (
     <div
-      className="flex flex-col gap-6"
+      className="activity-compact flex flex-col gap-5 sm:gap-6"
       style={{ fontFamily: '"Courier New", monospace' }}
     >
-      <div className="text-xs tracking-widest uppercase" style={{ color: 'rgba(74, 222, 128, 0.4)' }}>
+      <div className="activity-instruction text-xs tracking-widest uppercase" style={{ color: 'rgba(74, 222, 128, 0.4)' }}>
         {ac.instruction}
       </div>
 
-      <div className="text-sm sm:text-base leading-relaxed whitespace-pre-line" style={{ color: '#86efac' }}>
+      <div className="activity-text text-sm sm:text-base leading-relaxed whitespace-pre-line" style={{ color: '#86efac' }}>
         {renderText}
       </div>
 
@@ -97,7 +97,7 @@ export function FillBlanksActivity({ activity, onComplete }: { activity: Activit
         <motion.button
           onClick={handleConfirm}
           disabled={!allFilled}
-          className="self-start px-6 py-2 text-xs tracking-widest uppercase border transition-all duration-150 disabled:opacity-30"
+          className="btn-compact self-start px-5 py-2 sm:px-6 text-xs tracking-widest uppercase border transition-all duration-150 disabled:opacity-30"
           style={{
             color: '#4ade80',
             borderColor: allFilled ? 'rgba(74, 222, 128, 0.3)' : 'rgba(74, 222, 128, 0.1)',
@@ -125,7 +125,7 @@ export function FillBlanksActivity({ activity, onComplete }: { activity: Activit
           {isCorrect && (
             <motion.button
               onClick={onComplete}
-              className="block mt-4 px-6 py-2 text-xs tracking-widest uppercase border"
+              className="btn-compact block mt-4 px-5 py-2 sm:px-6 text-xs tracking-widest uppercase border"
               style={{
                 color: '#4ade80',
                 borderColor: 'rgba(74, 222, 128, 0.3)',

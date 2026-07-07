@@ -28,7 +28,7 @@ function NarraLeafDialogueContent() {
 
   return (
     <div
-      className="w-full max-w-5xl mx-auto min-h-44 p-6 sm:min-h-52 sm:p-8 border-[3px] cursor-pointer transition-all duration-150 hover:opacity-95"
+      className="dialog-compact w-full max-w-5xl mx-auto min-h-44 p-6 sm:min-h-52 sm:p-8 border-[3px] cursor-pointer transition-all duration-150 hover:opacity-95"
       style={{
         borderColor: 'rgba(145, 149, 88, 0.55)',
         backgroundColor: 'rgba(11, 13, 10, 0.96)',
@@ -48,7 +48,7 @@ function NarraLeafDialogueContent() {
       </div>
 
       <Texts
-        className="narraleaf-dialog-text text-lg sm:text-2xl leading-relaxed min-h-[4em]"
+        className="dialog-text narraleaf-dialog-text text-lg sm:text-2xl leading-relaxed min-h-[4em]"
         defaultColor="#dfe9ae"
         fontFamily='"Courier New", monospace'
         style={{
@@ -58,7 +58,7 @@ function NarraLeafDialogueContent() {
       />
 
       {done && (
-        <div className="mt-2 text-[20px] tracking-wider text-right animate-pulse" style={{ color: 'rgba(223, 233, 174, 0.45)' }}>
+        <div className="dialog-continue mt-2 text-sm sm:text-base tracking-wider text-right animate-pulse" style={{ color: 'rgba(223, 233, 174, 0.45)' }}>
           [CONTINUAR]
         </div>
       )}

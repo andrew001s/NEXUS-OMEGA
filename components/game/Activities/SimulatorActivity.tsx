@@ -70,19 +70,19 @@ export function SimulatorActivity({ activity, onComplete }: { activity: Activity
   const btnStyle = { fontFamily: '"Courier New", monospace' } as const
 
   return (
-    <div className="flex flex-col gap-6" style={{ fontFamily: '"Courier New", monospace' }}>
-      <div className="text-xs tracking-widest uppercase" style={{ color: 'rgba(74, 222, 128, 0.4)' }}>
+    <div className="activity-compact flex flex-col gap-5 sm:gap-6" style={{ fontFamily: '"Courier New", monospace' }}>
+      <div className="activity-instruction text-xs tracking-widest uppercase" style={{ color: 'rgba(74, 222, 128, 0.4)' }}>
         {ac.instruction}
       </div>
 
-      <p className="text-sm sm:text-base leading-relaxed" style={{ color: '#86efac' }}>
+      <p className="activity-text text-sm sm:text-base leading-relaxed" style={{ color: '#86efac' }}>
         {ac.description}
       </p>
 
       {phase === 'simulate' && (
         <div className="flex flex-col gap-5">
           {/* Vehicle selector */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="activity-grid-3 grid grid-cols-3 gap-2">
             {ac.vehicles.map((v) => (
               <motion.button
                 key={v.id}
@@ -169,7 +169,7 @@ export function SimulatorActivity({ activity, onComplete }: { activity: Activity
 
           {/* Vehicle animation */}
           <div
-            className="relative h-16 overflow-hidden rounded-sm border"
+            className="sim-animation relative h-14 sm:h-16 overflow-hidden rounded-sm border"
             style={{ borderColor: 'rgba(74, 222, 128, 0.12)', backgroundColor: 'rgba(0, 0, 0, 0.18)' }}
           >
             <div className="absolute inset-x-0 bottom-3 h-px" style={{ background: 'rgba(74, 222, 128, 0.18)' }} />
@@ -238,7 +238,7 @@ export function SimulatorActivity({ activity, onComplete }: { activity: Activity
           {/* Continue */}
           <motion.button
             onClick={handleProceedToQuestion}
-            className="self-start flex items-center gap-2 px-6 py-2 text-xs tracking-widest uppercase border"
+            className="btn-compact self-start flex items-center gap-2 px-5 py-2 sm:px-6 text-xs tracking-widest uppercase border"
             style={{
               color: '#4ade80',
               borderColor: 'rgba(74, 222, 128, 0.3)',

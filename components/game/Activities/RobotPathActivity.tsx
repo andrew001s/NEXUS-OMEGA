@@ -139,11 +139,11 @@ export function RobotPathActivity({ activity, onComplete }: { activity: Activity
   }, [isFilled, slots, ac.correctOrder])
 
   return (
-    <div className="flex flex-col gap-5" style={{ fontFamily: '"Courier New", monospace' }}>
-      <div className="text-xs tracking-widest uppercase" style={{ color: 'rgba(74, 222, 128, 0.4)' }}>
+    <div className="activity-compact flex flex-col gap-5" style={{ fontFamily: '"Courier New", monospace' }}>
+      <div className="activity-instruction text-xs tracking-widest uppercase" style={{ color: 'rgba(74, 222, 128, 0.4)' }}>
         {ac.instruction}
       </div>
-      <p className="text-sm sm:text-base leading-relaxed" style={{ color: '#86efac' }}>
+      <p className="activity-text text-sm sm:text-base leading-relaxed" style={{ color: '#86efac' }}>
         {ac.question}
       </p>
 
@@ -275,7 +275,7 @@ export function RobotPathActivity({ activity, onComplete }: { activity: Activity
         {isFilled && !answered && (
           <motion.button
             onClick={handleConfirm}
-            className="px-6 py-2 text-xs tracking-widest uppercase border"
+            className="btn-compact px-5 py-2 sm:px-6 text-xs tracking-widest uppercase border"
             style={{ color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.3)' }}
             whileHover={{ scale: 1.02 }}
           >
@@ -320,7 +320,7 @@ export function RobotPathActivity({ activity, onComplete }: { activity: Activity
             {isCorrect && (
               <motion.button
                 onClick={onComplete}
-                className="block mt-4 px-6 py-2 text-xs tracking-widest uppercase border"
+                className="btn-compact block mt-4 px-5 py-2 sm:px-6 text-xs tracking-widest uppercase border"
                 style={{ color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.3)' }}
                 whileHover={{ scale: 1.02 }}
               >

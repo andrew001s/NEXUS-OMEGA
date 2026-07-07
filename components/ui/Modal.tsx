@@ -34,7 +34,7 @@ export function Modal({ isOpen, onClose, title, children, ariaLabel }: ModalProp
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
           <motion.div
             className="absolute inset-0 bg-[#030302]/94"
             initial={{ opacity: 0 }}
@@ -49,7 +49,7 @@ export function Modal({ isOpen, onClose, title, children, ariaLabel }: ModalProp
             role="dialog"
             aria-modal="true"
             aria-label={ariaLabel ?? title}
-            className="relative w-[75vw] h-[80vh] max-w-5xl max-h-[900px] overflow-hidden border-[3px] border-[#786544] bg-[#0f0d09] shadow-[0_24px_80px_rgba(0,0,0,0.9)]"
+            className="modal-compact relative w-[92vw] sm:w-[80vw] h-[85vh] sm:h-[80vh] max-w-5xl max-h-[900px] overflow-hidden border-[3px] border-[#786544] bg-[#0f0d09] shadow-[0_24px_80px_rgba(0,0,0,0.9)]"
             style={{
               imageRendering: 'pixelated',
               backgroundImage:
@@ -62,7 +62,7 @@ export function Modal({ isOpen, onClose, title, children, ariaLabel }: ModalProp
             transition={{ duration: 0.15, ease: 'easeOut' }}
           >
             <div
-              className="flex items-center justify-between px-5 py-3 bg-[#1d1812] border-b-[3px] border-[#786544]"
+              className="modal-header flex items-center justify-between px-4 py-2 sm:px-5 sm:py-3 bg-[#1d1812] border-b-[3px] border-[#786544]"
               style={{
                 imageRendering: 'pixelated',
                 backgroundImage:
@@ -94,7 +94,7 @@ export function Modal({ isOpen, onClose, title, children, ariaLabel }: ModalProp
             </div>
 
             <div
-              className="h-[calc(100%-53px)] overflow-y-auto p-5"
+              className="modal-body h-[calc(100%-53px)] overflow-y-auto p-3 sm:p-5"
               style={{
                 fontFamily: '"Courier New", monospace',
                 imageRendering: 'pixelated',

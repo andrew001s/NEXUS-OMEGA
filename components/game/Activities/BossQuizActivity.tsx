@@ -160,8 +160,8 @@ export function BossQuizActivity({ activity, onComplete }: { activity: ActivityC
 
   if (finished) {
     return (
-      <div className="flex flex-col gap-6" style={{ fontFamily: '"Courier New", monospace' }}>
-        <div className="text-xs tracking-widest uppercase" style={{ color: 'rgba(74, 222, 128, 0.4)' }}>
+      <div className="activity-compact flex flex-col gap-5 sm:gap-6" style={{ fontFamily: '"Courier New", monospace' }}>
+        <div className="activity-instruction text-xs tracking-widest uppercase" style={{ color: 'rgba(74, 222, 128, 0.4)' }}>
           EVALUACIÓN COMPLETADA
         </div>
 
@@ -222,7 +222,7 @@ export function BossQuizActivity({ activity, onComplete }: { activity: ActivityC
             {passed ? (
               <motion.button
                 onClick={onComplete}
-                className="px-6 py-2 text-xs tracking-widest uppercase border"
+                className="btn-compact px-5 py-2 sm:px-6 text-xs tracking-widest uppercase border"
                 style={{
                   color: '#4ade80',
                   borderColor: 'rgba(74, 222, 128, 0.3)',
@@ -235,7 +235,7 @@ export function BossQuizActivity({ activity, onComplete }: { activity: ActivityC
             ) : (
               <motion.button
                 onClick={() => dispatch({ type: 'retry' })}
-                className="px-6 py-2 text-xs tracking-widest uppercase border"
+                className="btn-compact px-5 py-2 sm:px-6 text-xs tracking-widest uppercase border"
                 style={{
                   color: 'rgba(239, 68, 68, 0.7)',
                   borderColor: 'rgba(239, 68, 68, 0.3)',
@@ -253,8 +253,8 @@ export function BossQuizActivity({ activity, onComplete }: { activity: ActivityC
   }
 
   return (
-    <div className="flex flex-col gap-6" style={{ fontFamily: '"Courier New", monospace' }}>
-      <div className="text-xs tracking-widest uppercase" style={{ color: 'rgba(74, 222, 128, 0.4)' }}>
+    <div className="activity-compact flex flex-col gap-5 sm:gap-6" style={{ fontFamily: '"Courier New", monospace' }}>
+      <div className="activity-instruction text-xs tracking-widest uppercase" style={{ color: 'rgba(74, 222, 128, 0.4)' }}>
         {ac.instruction}
       </div>
 

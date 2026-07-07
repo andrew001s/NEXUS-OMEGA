@@ -44,18 +44,24 @@ function generateScene(levelId: string): SceneConfig {
       }
     case 'level-2':
       return {
-        baseGradient: 'linear-gradient(160deg, #050503 0%, #1a0f05 30%, #0f0a04 60%, #1a1208 100%)',
-        accentColor: 'rgba(251, 146, 60, 0.08)',
+        baseGradient: 'linear-gradient(160deg, #030a06 0%, #0a1a0f 30%, #06120a 60%, #0d1f12 100%)',
+        accentColor: 'rgba(74, 222, 128, 0.08)',
         elements: [
-          { type: 'circle', x: 50, y: 40, size: 25, color: 'rgba(251, 146, 60, 0.06)', opacity: 0.7, pulse: true, glow: '0 0 60px rgba(251, 146, 60, 0.03)' },
-          { type: 'circle', x: 50, y: 40, size: 12, color: 'rgba(251, 146, 60, 0.08)', opacity: 0.6, pulse: true },
-          { type: 'circle', x: 50, y: 40, size: 5, color: 'rgba(251, 146, 60, 0.12)', opacity: 0.5, pulse: true },
-          { type: 'circle', x: 20, y: 30, size: 10, color: 'rgba(251, 146, 60, 0.04)', opacity: 0.4, pulse: true },
-          { type: 'circle', x: 78, y: 35, size: 8, color: 'rgba(251, 146, 60, 0.04)', opacity: 0.4, pulse: true },
-          { type: 'circle', x: 35, y: 65, size: 14, color: 'rgba(251, 146, 60, 0.03)', opacity: 0.3, pulse: true },
-          { type: 'line', x: 25, y: 40, width: 50, height: 2, color: 'rgba(251, 146, 60, 0.04)', opacity: 0.3, rotate: 0 },
-          { type: 'line', x: 25, y: 42, width: 50, height: 1, color: 'rgba(251, 146, 60, 0.02)', opacity: 0.2, rotate: 0 },
-          { type: 'grid', x: 0, y: 0, width: 100, height: 100, color: 'rgba(251, 146, 60, 0.012)', opacity: 0.3 },
+          { type: 'rect', x: 1, y: 30, width: 18, height: 32, color: 'rgba(74, 222, 128, 0.03)', opacity: 0.4 },
+          { type: 'rect', x: 20, y: 35, width: 16, height: 38, color: 'rgba(74, 222, 128, 0.03)', opacity: 0.35 },
+          { type: 'rect', x: 37, y: 25, width: 18, height: 42, color: 'rgba(74, 222, 128, 0.025)', opacity: 0.35 },
+          { type: 'rect', x: 55, y: 8, width: 15, height: 38, color: 'rgba(74, 222, 128, 0.03)', opacity: 0.3 },
+          { type: 'rect', x: 71, y: 28, width: 15, height: 36, color: 'rgba(74, 222, 128, 0.025)', opacity: 0.35 },
+          { type: 'rect', x: 84, y: 2, width: 18, height: 88, color: 'rgba(74, 222, 128, 0.035)', opacity: 0.4, glow: '0 0 40px rgba(74, 222, 128, 0.02)' },
+          { type: 'circle', x: 50, y: 15, size: 3, color: 'rgba(74, 222, 128, 0.08)', opacity: 0.6, pulse: true },
+          { type: 'circle', x: 30, y: 55, size: 2, color: 'rgba(74, 222, 128, 0.06)', opacity: 0.5, pulse: true },
+          { type: 'circle', x: 65, y: 50, size: 2.5, color: 'rgba(74, 222, 128, 0.06)', opacity: 0.5, pulse: true },
+          { type: 'circle', x: 45, y: 70, size: 4, color: 'rgba(74, 222, 128, 0.04)', opacity: 0.4, pulse: true },
+          { type: 'circle', x: 15, y: 20, size: 1.5, color: 'rgba(74, 222, 128, 0.05)', opacity: 0.4, pulse: true },
+          { type: 'circle', x: 80, y: 60, size: 2, color: 'rgba(74, 222, 128, 0.05)', opacity: 0.4, pulse: true },
+          { type: 'line', x: 0, y: 50, width: 100, height: 1, color: 'rgba(74, 222, 128, 0.04)', opacity: 0.25 },
+          { type: 'line', x: 0, y: 75, width: 100, height: 1, color: 'rgba(74, 222, 128, 0.025)', opacity: 0.15 },
+          { type: 'grid', x: 0, y: 0, width: 100, height: 100, color: 'rgba(74, 222, 128, 0.012)', opacity: 0.25 },
         ],
       }
     case 'level-3':

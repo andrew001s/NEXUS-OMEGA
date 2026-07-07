@@ -156,3 +156,54 @@ body {
     opacity: 0.8;
   }
 }
+
+/* ── Landscape-lock for mobile portrait ── */
+@media (orientation: portrait) and (pointer: coarse) and (max-width: 768px) {
+  .rotate-device-overlay {
+    display: flex !important;
+  }
+}
+
+/* ── Responsive: compact UI on short viewports (landscape mobile) ── */
+@media (max-height: 500px) {
+  .dialog-compact {
+    min-height: 120px !important;
+  }
+  .dialog-compact .dialog-text {
+    font-size: 0.8rem !important;
+    line-height: 1.3 !important;
+    min-height: 2.5em !important;
+  }
+  .dialog-compact .dialog-continue {
+    font-size: 0.7rem !important;
+    margin-top: 0.2rem !important;
+  }
+  .activity-compact {
+    gap: 0.35rem !important;
+  }
+  .activity-compact .activity-instruction {
+    font-size: 0.6rem !important;
+  }
+  .activity-compact .activity-text {
+    font-size: 0.7rem !important;
+  }
+  .activity-compact .activity-grid-3 {
+    gap: 0.2rem !important;
+  }
+  .activity-compact .btn-compact {
+    padding: 0.2rem 0.5rem !important;
+    font-size: 0.55rem !important;
+  }
+  .modal-compact .modal-header {
+    padding: 0.25rem 0.5rem !important;
+  }
+  .modal-compact .modal-body {
+    padding: 0.4rem !important;
+  }
+  .sim-animation {
+    height: 3rem !important;
+  }
+  .sim-metrics-label {
+    font-size: 0.5rem !important;
+  }
+}
