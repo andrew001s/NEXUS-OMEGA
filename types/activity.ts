@@ -1,4 +1,4 @@
-export type ActivityType = 'multiple-choice' | 'drag-order' | 'fill-blanks' | 'slider' | 'boss-quiz' | 'robot-path'
+export type ActivityType = 'multiple-choice' | 'drag-order' | 'fill-blanks' | 'slider' | 'boss-quiz' | 'robot-path' | 'simulator'
 
 export interface ActivityFeedback {
   success: string
@@ -82,6 +82,27 @@ export interface RobotPathActivity {
   feedback: ActivityFeedback
 }
 
+export interface SimulatorVehicle {
+  id: string
+  name: string
+  massKg: number
+  maxSpeed: number
+  emoji: string
+}
+
+export interface SimulatorActivity {
+  id: string
+  type: 'simulator'
+  title: string
+  instruction: string
+  description: string
+  vehicles: SimulatorVehicle[]
+  followUpQuestion: string
+  followUpOptions: string[]
+  followUpCorrectIndex: number
+  feedback: ActivityFeedback
+}
+
 export type ActivityConfig =
   | MultipleChoiceActivity
   | DragOrderActivity
@@ -89,3 +110,4 @@ export type ActivityConfig =
   | SliderActivity
   | BossQuizActivity
   | RobotPathActivity
+  | SimulatorActivity

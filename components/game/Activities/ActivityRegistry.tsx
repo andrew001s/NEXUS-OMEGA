@@ -7,6 +7,7 @@ import { FillBlanksActivity } from './FillBlanksActivity'
 import { SliderActivity } from './SliderActivity'
 import { BossQuizActivity } from './BossQuizActivity'
 import { RobotPathActivity } from './RobotPathActivity'
+import { SimulatorActivity } from './SimulatorActivity'
 
 interface ActivityRendererProps {
   activity: ActivityConfig
@@ -20,6 +21,7 @@ const registry: Record<ActivityType, React.ComponentType<{ activity: ActivityCon
   'slider': SliderActivity,
   'boss-quiz': BossQuizActivity,
   'robot-path': RobotPathActivity,
+  'simulator': SimulatorActivity,
 }
 
 export function ActivityRenderer({ activity, onComplete }: ActivityRendererProps) {
