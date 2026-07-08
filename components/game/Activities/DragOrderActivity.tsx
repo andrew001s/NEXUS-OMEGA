@@ -2,19 +2,34 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Bot, Cog, Gauge, Zap } from 'lucide-react'
+import { ArrowRight, Atom, Beaker, Bot, Cog, FlaskConical, Gauge, Sparkles, Zap } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { ActivityConfig } from '@/types/activity'
 
-function getRobotStepIcon(item: string): LucideIcon {
+function getStepIcon(item: string): LucideIcon {
   const normalized = item.toLowerCase()
 
+  if (normalized.includes('reactivo')) return FlaskConical
+  if (normalized.includes('reacción') || normalized.includes('reaccion')) return Beaker
+  if (normalized.includes('liberación') || normalized.includes('liberacion') || normalized.includes('energía') || normalized.includes('energia')) return Sparkles
+  if (normalized.includes('producto')) return Atom
   if (normalized.includes('movimiento')) return Gauge
   if (normalized.includes('cinética')) return Zap
   if (normalized.includes('motor')) return Cog
   if (normalized.includes('robot')) return Bot
 
   return Zap
+}
+
+function getStepSlotLabel(item: string, step: number): string {
+  const normalized = item.toLowerCase()
+
+  if (normalized.includes('reactivo')) return 'Entrada'
+  if (normalized.includes('reacción') || normalized.includes('reaccion')) return 'Proceso'
+  if (normalized.includes('liberación') || normalized.includes('liberacion') || normalized.includes('energía') || normalized.includes('energia')) return 'Cambio'
+  if (normalized.includes('producto')) return 'Resultado'
+
+  return `Paso ${step + 1}`
 }
 
 function getSeededOrder(length: number, seed: string) {
@@ -42,6 +57,13 @@ export function DragOrderActivity({ activity, onComplete }: { activity: Activity
   const [order, setOrder] = useState<number[]>([])
   const [answered, setAnswered] = useState(false)
   const ac = activity as Extract<ActivityConfig, { type: 'drag-order' }>
+  const isChemistryFlow = ac.items.some((item) => {
+    const normalized = item.toLowerCase()
+    return normalized.includes('reactivo')
+      || normalized.includes('reacción')
+      || normalized.includes('reaccion')
+      || normalized.includes('producto')
+  })
 
   const availableOrder = useMemo(() => getSeededOrder(ac.items.length, ac.id), [ac.id, ac.items.length])
   const remaining = availableOrder.filter((index) => !order.includes(index))
@@ -94,15 +116,16 @@ export function DragOrderActivity({ activity, onComplete }: { activity: Activity
         className="relative overflow-hidden rounded-sm border p-4"
         style={{
           borderColor: 'rgba(74, 222, 128, 0.14)',
-          background:
-            'radial-gradient(circle at 18% 50%, rgba(74,222,128,0.12), transparent 24%), linear-gradient(90deg, rgba(74,222,128,0.035), rgba(20,83,45,0.04))',
+          background: isChemistryFlow
+            ? 'radial-gradient(circle at 18% 50%, rgba(74,222,128,0.08), transparent 24%), radial-gradient(circle at 80% 40%, rgba(250,204,21,0.06), transparent 18%), linear-gradient(90deg, rgba(74,222,128,0.03), rgba(20,83,45,0.045))'
+            : 'radial-gradient(circle at 18% 50%, rgba(74,222,128,0.12), transparent 24%), linear-gradient(90deg, rgba(74,222,128,0.035), rgba(20,83,45,0.04))',
         }}
       >
         <div className="absolute left-8 right-8 top-1/2 h-px -translate-y-1/2" style={{ background: 'rgba(74, 222, 128, 0.18)' }} />
         <div className="relative grid grid-cols-4 gap-2">
           {ac.correctOrder.map((itemIndex, step) => {
             const selectedIndex = order[step]
-            const StepIcon = selectedIndex === undefined ? getRobotStepIcon(ac.items[itemIndex]) : getRobotStepIcon(ac.items[selectedIndex])
+            const StepIcon = selectedIndex === undefined ? getStepIcon(ac.items[itemIndex]) : getStepIcon(ac.items[selectedIndex])
             const isStepCorrect = answered && selectedIndex === itemIndex
             const isStepWrong = answered && selectedIndex !== undefined && selectedIndex !== itemIndex
 
@@ -134,8 +157,21 @@ export function DragOrderActivity({ activity, onComplete }: { activity: Activity
                   <StepIcon size={22} aria-hidden="true" />
                 </div>
                 <div className="text-center text-[10px] uppercase tracking-wider" style={{ color: 'rgba(134, 239, 172, 0.45)' }}>
-                  Paso {step + 1}
+                  {getStepSlotLabel(ac.items[itemIndex], step)}
                 </div>
+                {isChemistryFlow && (
+                  <div className="text-center text-[9px] leading-tight" style={{ color: 'rgba(223, 233, 174, 0.4)' }}>
+                    {step === 0 && 'Ingresan sustancias'}
+                    {step === 1 && 'Ocurre el cambio'}
+                    {step === 2 && 'Se transfiere energia'}
+                    {step === 3 && 'Aparecen nuevos compuestos'}
+                  </div>
+                )}
+                {isChemistryFlow && selectedIndex === undefined && (
+                  <div className="text-center text-[9px] uppercase tracking-[0.18em]" style={{ color: 'rgba(74, 222, 128, 0.18)' }}>
+                    Esperando
+                  </div>
+                )}
               </div>
             )
           })}
@@ -146,7 +182,9 @@ export function DragOrderActivity({ activity, onComplete }: { activity: Activity
       <div className="flex flex-col gap-1.5 min-h-[100px]">
         {order.length === 0 && (
           <div className="text-xs py-8 text-center" style={{ color: 'rgba(74, 222, 128, 0.15)' }}>
-            Selecciona las piezas para encender la ruta del robot
+            {isChemistryFlow
+              ? 'Selecciona las etapas en el orden en que ocurre la reaccion dentro de la camara'
+              : 'Selecciona las piezas para completar la secuencia'}
           </div>
         )}
         {order.map((itemIndex, pos) => (
@@ -178,7 +216,7 @@ export function DragOrderActivity({ activity, onComplete }: { activity: Activity
           >
             <span className="flex items-center gap-3">
               {(() => {
-                const ItemIcon = getRobotStepIcon(ac.items[itemIndex])
+                const ItemIcon = getStepIcon(ac.items[itemIndex])
                 return <ItemIcon size={17} aria-hidden="true" />
               })()}
               <span>{pos + 1}. {ac.items[itemIndex]}</span>
@@ -192,7 +230,7 @@ export function DragOrderActivity({ activity, onComplete }: { activity: Activity
         <div className="flex flex-wrap gap-2 pt-2 border-t" style={{ borderColor: 'rgba(74, 222, 128, 0.08)' }}>
           {remaining.map((i) => {
             const item = ac.items[i]
-            const ItemIcon = getRobotStepIcon(item)
+            const ItemIcon = getStepIcon(item)
 
             return (
               <motion.button
@@ -209,7 +247,17 @@ export function DragOrderActivity({ activity, onComplete }: { activity: Activity
                 whileTap={{ scale: 0.95 }}
               >
                 <ItemIcon size={14} aria-hidden="true" />
-                {item}
+                <span className="flex flex-col items-start">
+                  <span>{item}</span>
+                  {isChemistryFlow && (
+                    <span className="text-[9px] uppercase tracking-[0.16em]" style={{ color: 'rgba(223, 233, 174, 0.34)' }}>
+                      {item.toLowerCase().includes('reactivo') && 'Sustancias iniciales'}
+                      {(item.toLowerCase().includes('reacción') || item.toLowerCase().includes('reaccion')) && 'Transformacion'}
+                      {(item.toLowerCase().includes('liberación') || item.toLowerCase().includes('liberacion') || item.toLowerCase().includes('energia')) && 'Transferencia'}
+                      {item.toLowerCase().includes('producto') && 'Resultado final'}
+                    </span>
+                  )}
+                </span>
               </motion.button>
             )
           })}
