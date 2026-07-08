@@ -70,6 +70,15 @@ const novaImage = new NarraLeafImage({
 const novaCharacter = new NarraLeafCharacter('Dra. Nova Dalton')
 novaCharacter.addPortrait(novaImage)
 
+const nexusImage = new NarraLeafImage({
+  name: 'NEXUS Ω',
+  src: '/assets/sprites/nexus.png',
+  zoom: 0.94,
+})
+
+const nexusCharacter = new NarraLeafCharacter('NEXUS Ω')
+nexusCharacter.addPortrait(nexusImage)
+
 export const SPEAKER_PROFILES: Record<string, SpeakerProfile> = {
   KIRA: {
     displayName: 'Dr.Kira Newton',
@@ -103,7 +112,9 @@ export const SPEAKER_PROFILES: Record<string, SpeakerProfile> = {
   },
   NEXUS: {
     displayName: 'NEXUS Ω',
-    character: new NarraLeafCharacter('NEXUS Ω'),
+    spriteAlt: 'NEXUS Ω',
+    character: nexusCharacter,
+    image: nexusImage,
   },
   SISTEMA: {
     displayName: 'SISTEMA',

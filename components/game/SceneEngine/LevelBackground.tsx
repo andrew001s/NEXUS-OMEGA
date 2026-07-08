@@ -120,7 +120,7 @@ function generateScene(levelId: string): SceneConfig {
       }
     case 'level-6':
       return {
-        backgroundImage: '/backgrounds/level4.png',
+        backgroundImage: '/backgrounds/final-level.png',
         baseGradient: 'linear-gradient(160deg, #040507 0%, #0b1018 30%, #0c1210 60%, #130f08 100%)',
         accentColor: 'rgba(96, 165, 250, 0.1)',
         elements: [
