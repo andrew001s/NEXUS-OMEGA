@@ -16,6 +16,27 @@ function splitFillBlanksText(text: string) {
   return text.split(/(\[[^\]]+\]|___)/g)
 }
 
+function getSeededShuffle(words: string[], seed: string) {
+  const values = [...words]
+  let hash = 0
+
+  for (const char of seed) {
+    hash = (hash * 31 + char.charCodeAt(0)) >>> 0
+  }
+
+  for (let index = values.length - 1; index > 0; index -= 1) {
+    hash = (hash * 1664525 + 1013904223) >>> 0
+    const swapIndex = hash % (index + 1)
+    ;[values[index], values[swapIndex]] = [values[swapIndex], values[index]]
+  }
+
+  if (values.every((word, index) => word === words[index]) && values.length > 1) {
+    ;[values[0], values[1]] = [values[1], values[0]]
+  }
+
+  return values
+}
+
 export function FillBlanksActivity({ activity, onComplete }: { activity: ActivityConfig; onComplete: () => void }) {
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [answered, setAnswered] = useState(false)
@@ -80,7 +101,10 @@ export function FillBlanksActivity({ activity, onComplete }: { activity: Activit
 
   const allFilled = Object.keys(answers).length === ac.blanks.length
 
-  const wordBank = useMemo(() => Array.from(new Set(ac.correctAnswers)), [ac.correctAnswers])
+  const wordBank = useMemo(
+    () => getSeededShuffle(Array.from(new Set(ac.correctAnswers)), ac.id),
+    [ac.correctAnswers, ac.id],
+  )
   const usedWords = useMemo(() => new Set(Object.values(answers)), [answers])
 
   const handleSphereDragEnd = useCallback(
