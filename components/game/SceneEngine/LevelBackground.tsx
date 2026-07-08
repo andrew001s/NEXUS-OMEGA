@@ -118,6 +118,25 @@ function generateScene(levelId: string): SceneConfig {
           { type: 'grid', x: 0, y: 0, width: 100, height: 100, color: 'rgba(250, 204, 21, 0.012)', opacity: 0.3 },
         ],
       }
+    case 'level-6':
+      return {
+        backgroundImage: '/backgrounds/level4.png',
+        baseGradient: 'linear-gradient(160deg, #040507 0%, #0b1018 30%, #0c1210 60%, #130f08 100%)',
+        accentColor: 'rgba(96, 165, 250, 0.1)',
+        elements: [
+          { type: 'circle', x: 50, y: 24, size: 18, color: 'rgba(96, 165, 250, 0.08)', opacity: 0.7, pulse: true, glow: '0 0 80px rgba(96, 165, 250, 0.04)' },
+          { type: 'circle', x: 50, y: 24, size: 8, color: 'rgba(250, 204, 21, 0.08)', opacity: 0.5, pulse: true },
+          { type: 'rect', x: 6, y: 56, width: 14, height: 18, color: 'rgba(74, 222, 128, 0.04)', opacity: 0.3 },
+          { type: 'rect', x: 31, y: 54, width: 16, height: 20, color: 'rgba(74, 222, 128, 0.03)', opacity: 0.28 },
+          { type: 'rect', x: 58, y: 42, width: 14, height: 28, color: 'rgba(96, 165, 250, 0.03)', opacity: 0.32 },
+          { type: 'rect', x: 78, y: 18, width: 16, height: 52, color: 'rgba(250, 204, 21, 0.035)', opacity: 0.34 },
+          { type: 'line', x: 12, y: 64, width: 22, height: 1, color: 'rgba(96, 165, 250, 0.08)', opacity: 0.3 },
+          { type: 'line', x: 36, y: 60, width: 24, height: 1, color: 'rgba(74, 222, 128, 0.06)', opacity: 0.25 },
+          { type: 'line', x: 62, y: 50, width: 20, height: 1, color: 'rgba(250, 204, 21, 0.08)', opacity: 0.3 },
+          { type: 'line', x: 0, y: 74, width: 100, height: 1, color: 'rgba(223, 233, 174, 0.03)', opacity: 0.18 },
+          { type: 'grid', x: 0, y: 0, width: 100, height: 100, color: 'rgba(223, 233, 174, 0.012)', opacity: 0.24 },
+        ],
+      }
     default:
       return {
         baseGradient: 'linear-gradient(160deg, #050805 0%, #0a1a0a 30%, #071207 60%, #0d1f0d 100%)',

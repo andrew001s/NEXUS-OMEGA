@@ -25,7 +25,7 @@ export const level5: LevelConfig = {
     { speaker: 'NEXUS', text: 'Aun asi, el equilibrio que buscan es un error.' },
     { speaker: 'NEXUS', text: 'Dirijanse al Nucleo si desean conocer la verdad.' },
   ],
-  nextLevel: null,
+  nextLevel: 'level-6',
   interactiveObjects: [
     {
       id: 'consola-bioquimica',

@@ -4,6 +4,7 @@ import { level2 } from '@/levels/level-2'
 import { level3 } from '@/levels/level-3'
 import { level4 } from '@/levels/level-4'
 import { level5 } from '@/levels/level-5'
+import { finalLevel } from '@/levels/final-level'
 
 const levels: Record<string, LevelConfig> = {
   'level-1': level1,
@@ -11,6 +12,7 @@ const levels: Record<string, LevelConfig> = {
   'level-3': level3,
   'level-4': level4,
   'level-5': level5,
+  'level-6': finalLevel,
 }
 
 export function getLevelConfig(levelId: string): LevelConfig | null {
