@@ -79,6 +79,19 @@ export interface RobotPathActivity {
   question: string
   items: string[]
   correctOrder: number[]
+  mode?: 'path-order' | 'light-rotation'
+  nodes?: {
+    id: string
+    label: string
+    type: 'source' | 'mirror' | 'prism' | 'receiver'
+    x: number
+    y: number
+    initialRotation: number
+    correctRotation: number
+  }[]
+  followUpQuestion?: string
+  followUpOptions?: string[]
+  followUpCorrectIndices?: number[]
   feedback: ActivityFeedback
 }
 

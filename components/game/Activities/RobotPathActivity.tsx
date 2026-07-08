@@ -1,28 +1,25 @@
 'use client'
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Gauge, Zap, Cog, Bot, ArrowRight } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowRight, Bot, Cog, Gauge, Sparkles, Triangle, Zap } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { ActivityConfig } from '@/types/activity'
 
 function getStepIcon(item: string): LucideIcon {
-  const n = item.toLowerCase()
-  if (n.includes('movimiento')) return Gauge
-  if (n.includes('cin\u00E9tica') || n.includes('cinetica')) return Zap
-  if (n.includes('motor')) return Cog
-  if (n.includes('robot')) return Bot
+  const normalized = item.toLowerCase()
+  if (normalized.includes('movimiento')) return Gauge
+  if (normalized.includes('cinética') || normalized.includes('cinetica')) return Zap
+  if (normalized.includes('motor')) return Cog
+  if (normalized.includes('robot')) return Bot
   return Zap
 }
 
-function getStepColor(index: number): string {
-  const colors = [
-    'rgba(74, 222, 128, 0.25)',
-    'rgba(96, 165, 250, 0.25)',
-    'rgba(251, 146, 60, 0.25)',
-    'rgba(192, 132, 252, 0.25)',
-  ]
-  return colors[index] ?? colors[0]
+function getNodeIcon(type: 'source' | 'mirror' | 'prism' | 'receiver'): LucideIcon {
+  if (type === 'source') return Zap
+  if (type === 'prism') return Triangle
+  if (type === 'receiver') return Sparkles
+  return ArrowRight
 }
 
 function getStepBorder(index: number): string {
@@ -38,105 +35,158 @@ function getStepBorder(index: number): string {
 function seededShuffle<T>(arr: T[], seed: string): T[] {
   const result = [...arr]
   let hash = 0
-  for (const c of seed) hash = (hash * 31 + c.charCodeAt(0)) >>> 0
-  for (let i = result.length - 1; i > 0; i--) {
+  for (const char of seed) hash = (hash * 31 + char.charCodeAt(0)) >>> 0
+  for (let index = result.length - 1; index > 0; index -= 1) {
     hash = (hash * 1664525 + 1013904223) >>> 0
-    const j = hash % (i + 1)
-    ;[result[i], result[j]] = [result[j], result[i]]
+    const swapIndex = hash % (index + 1)
+    ;[result[index], result[swapIndex]] = [result[swapIndex], result[index]]
   }
-  if (result.every((v, i) => v === arr[i]) && result.length > 1) {
+  if (result.every((value, index) => value === arr[index]) && result.length > 1) {
     ;[result[0], result[1]] = [result[1], result[0]]
   }
   return result
 }
 
+function arraysMatch(a: number[], b: number[]) {
+  return a.length === b.length && a.every((value, index) => value === b[index])
+}
+
 export function RobotPathActivity({ activity, onComplete }: { activity: ActivityConfig; onComplete: () => void }) {
   const ac = activity as Extract<ActivityConfig, { type: 'robot-path' }>
+  const isRotationMode = ac.mode === 'light-rotation' && Array.isArray(ac.nodes) && ac.nodes.length > 0
+
   const [slots, setSlots] = useState<(number | null)[]>([null, null, null, null])
   const [shakeSlots, setShakeSlots] = useState<Set<number>>(new Set())
   const [answered, setAnswered] = useState(false)
   const [glowStep, setGlowStep] = useState(-1)
   const [powerOn, setPowerOn] = useState(false)
+  const [rotations, setRotations] = useState<number[]>(() => ac.nodes?.map((node) => node.initialRotation) ?? [])
+  const [followUpSelected, setFollowUpSelected] = useState<number[]>([])
+  const [followUpAnswered, setFollowUpAnswered] = useState(false)
   const dragIndexRef = useRef<number | null>(null)
 
-  const shuffledItems = useMemo(() => seededShuffle(
-    ac.items.map((_, i) => i),
-    ac.id,
-  ), [ac.id, ac.items.length])
-
-  const placedIndices = useMemo(() => slots.filter((s): s is number => s !== null), [slots])
-  const availableItems = useMemo(() => shuffledItems.filter((i) => !placedIndices.includes(i)), [shuffledItems, placedIndices])
-
-  const isFilled = slots.every((s) => s !== null)
-  const isCorrect = useMemo(
-    () => answered && slots.every((s, i) => s === ac.correctOrder[i]),
-    [answered, slots, ac.correctOrder],
+  const shuffledItems = useMemo(
+    () => seededShuffle(ac.items.map((_, index) => index), ac.id),
+    [ac.id, ac.items],
   )
+  const placedIndices = useMemo(() => slots.filter((slot): slot is number => slot !== null), [slots])
+  const availableItems = useMemo(() => shuffledItems.filter((index) => !placedIndices.includes(index)), [shuffledItems, placedIndices])
+  const isFilled = slots.every((slot) => slot !== null)
+
+  const orderSolved = useMemo(
+    () => slots.every((slot, index) => slot === ac.correctOrder[index]),
+    [ac.correctOrder, slots],
+  )
+
+  const nodes = ac.nodes ?? []
+  const rotationSolved = useMemo(
+    () => !isRotationMode || nodes.every((node, index) => rotations[index] === node.correctRotation),
+    [isRotationMode, nodes, rotations],
+  )
+
+  const followUpSolved = useMemo(
+    () =>
+      !isRotationMode ||
+      !ac.followUpCorrectIndices ||
+      arraysMatch([...followUpSelected].sort((a, b) => a - b), [...ac.followUpCorrectIndices].sort((a, b) => a - b)),
+    [ac.followUpCorrectIndices, followUpSelected, isRotationMode],
+  )
+
+  const isCorrect = isRotationMode ? rotationSolved && followUpSolved : answered && orderSolved
+  const canConfirmRotation = rotationSolved && followUpSelected.length > 0
+  const showFollowUp = isRotationMode && rotationSolved
 
   useEffect(() => {
     if (answered && isCorrect) {
-      const t1 = setTimeout(() => setGlowStep(0), 200)
-      const t2 = setTimeout(() => setGlowStep(1), 500)
-      const t3 = setTimeout(() => setGlowStep(2), 800)
-      const t4 = setTimeout(() => setGlowStep(3), 1100)
-      const t5 = setTimeout(() => setPowerOn(true), 1500)
+      const timers = [
+        setTimeout(() => setGlowStep(0), 200),
+        setTimeout(() => setGlowStep(1), 500),
+        setTimeout(() => setGlowStep(2), 800),
+        setTimeout(() => setGlowStep(3), 1100),
+        setTimeout(() => setPowerOn(true), 1500),
+      ]
+
       return () => {
-        clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5)
+        for (const timer of timers) clearTimeout(timer)
       }
     }
   }, [answered, isCorrect])
 
-  const handleDragStart = useCallback((e: React.DragEvent, index: number) => {
+  const handleDragStart = (e: React.DragEvent, index: number) => {
     dragIndexRef.current = index
     e.dataTransfer.effectAllowed = 'move'
     e.dataTransfer.setData('text/plain', String(index))
-  }, [])
+  }
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
     e.dataTransfer.dropEffect = 'move'
-  }, [])
+  }
 
-  const handleDrop = useCallback((e: React.DragEvent, slotIndex: number) => {
+  const handleDrop = (e: React.DragEvent, slotIndex: number) => {
     e.preventDefault()
     if (answered) return
     const itemIndex = parseInt(e.dataTransfer.getData('text/plain'), 10)
-    if (isNaN(itemIndex) || slots[slotIndex] !== null) return
+    if (Number.isNaN(itemIndex) || slots[slotIndex] !== null) return
+
     if (itemIndex === ac.correctOrder[slotIndex]) {
       const next = [...slots]
       next[slotIndex] = itemIndex
       setSlots(next)
-    } else {
-      setShakeSlots((prev) => new Set(prev).add(slotIndex))
-      setTimeout(() => setShakeSlots((prev) => {
+      return
+    }
+
+    setShakeSlots((prev) => new Set(prev).add(slotIndex))
+    setTimeout(() => {
+      setShakeSlots((prev) => {
         const next = new Set(prev)
         next.delete(slotIndex)
         return next
-      }), 500)
-    }
-  }, [answered, slots, ac.correctOrder])
+      })
+    }, 500)
+  }
 
-  const handleSlotClick = useCallback((slotIndex: number) => {
-    if (answered) return
-    if (slots[slotIndex] === null) return
+  const handleSlotClick = (slotIndex: number) => {
+    if (answered || slots[slotIndex] === null) return
     const next = [...slots]
     next[slotIndex] = null
     setSlots(next)
-  }, [answered, slots])
+  }
 
-  const handleReset = useCallback(() => {
-    if (answered) return
+  const handleRotateNode = (index: number) => {
+    if (!isRotationMode || answered) return
+    setRotations((prev) => prev.map((value, nodeIndex) => (nodeIndex === index ? (value + 90) % 360 : value)))
+  }
+
+  const handleFollowUpToggle = (index: number) => {
+    if (!showFollowUp || followUpAnswered || answered) return
+    setFollowUpSelected((prev) =>
+      prev.includes(index) ? prev.filter((value) => value !== index) : [...prev, index],
+    )
+  }
+
+  const handleReset = () => {
     setSlots([null, null, null, null])
     setShakeSlots(new Set())
     setGlowStep(-1)
     setPowerOn(false)
-  }, [answered])
+    setRotations(ac.nodes?.map((node) => node.initialRotation) ?? [])
+    setFollowUpSelected([])
+    setFollowUpAnswered(false)
+    setAnswered(false)
+  }
 
-  const handleConfirm = useCallback(() => {
+  const handleConfirm = () => {
+    if (isRotationMode) {
+      if (!canConfirmRotation) return
+      setFollowUpAnswered(true)
+      setAnswered(true)
+      return
+    }
+
     if (!isFilled) return
     setAnswered(true)
-    if (slots.every((s, i) => s === ac.correctOrder[i])) return
-  }, [isFilled, slots, ac.correctOrder])
+  }
 
   return (
     <div className="activity-compact flex flex-col gap-5" style={{ fontFamily: '"Courier New", monospace' }}>
@@ -147,122 +197,246 @@ export function RobotPathActivity({ activity, onComplete }: { activity: Activity
         {ac.question}
       </p>
 
-      {/* Path visualization */}
-      <div
-        className="relative rounded-sm border p-4 sm:p-6 pt-8 sm:pt-10 pb-6"
-        style={{
-          borderColor: 'rgba(74, 222, 128, 0.14)',
-          background: 'radial-gradient(ellipse at 50% 50%, rgba(74, 222, 128, 0.03), transparent 70%)',
-        }}
-      >
-        {/* Circuit trace lines */}
-        <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ opacity: 0.2 }}>
-          {[0, 1, 2].map((i) => {
-            const x1 = `${(i + 1) * 20 + 5}%`
-            const x2 = `${(i + 2) * 20 - 5}%`
-            const lit = answered && isCorrect && glowStep >= i + 1
-            return (
-              <line key={i} x1={x1} y1="50%" x2={x2} y2="50%"
-                stroke={lit ? 'rgba(74, 222, 128, 0.6)' : 'rgba(74, 222, 128, 0.1)'}
-                strokeWidth="2" strokeDasharray="4 3"
-              />
-            )
-          })}
-        </svg>
+      {isRotationMode ? (
+        <div
+          className="relative rounded-sm border p-4 sm:p-6"
+          style={{
+            borderColor: 'rgba(74, 222, 128, 0.14)',
+            background: 'radial-gradient(ellipse at 50% 50%, rgba(251, 191, 36, 0.06), transparent 70%)',
+          }}
+        >
+          <div className="mb-3 flex items-center justify-between text-[10px] uppercase tracking-widest" style={{ color: 'rgba(216, 226, 143, 0.5)' }}>
+            <span>haz clic para girar 90°</span>
+            <span>{rotationSolved ? 'haz alineado' : 'guia la luz al receptor'}</span>
+          </div>
 
-        <div className="relative flex items-start justify-between gap-1 sm:gap-2">
-          {ac.correctOrder.map((_, slotIndex) => {
-            const placedItemIndex = slots[slotIndex]
-            const ItemIcon = placedItemIndex !== null ? getStepIcon(ac.items[placedItemIndex]) : undefined
-            const isShaking = shakeSlots.has(slotIndex)
-            const isLit = answered && isCorrect && glowStep >= slotIndex
+          <div className="relative h-[300px] overflow-hidden rounded-sm border" style={{ borderColor: 'rgba(74, 222, 128, 0.12)', backgroundColor: 'rgba(0, 0, 0, 0.18)' }}>
+            <svg className="absolute inset-0 h-full w-full pointer-events-none">
+              {rotationSolved && (
+                <>
+                  {nodes.slice(0, -1).map((node, index) => {
+                    const next = nodes[index + 1]
+                    return (
+                      <motion.line
+                        key={`${node.id}-${next.id}`}
+                        x1={`${node.x}%`}
+                        y1={`${node.y}%`}
+                        x2={`${next.x}%`}
+                        y2={`${next.y}%`}
+                        stroke="rgba(251, 191, 36, 0.85)"
+                        strokeWidth="4"
+                        initial={{ pathLength: 0, opacity: 0.35 }}
+                        animate={{ pathLength: 1, opacity: 1 }}
+                        transition={{ duration: 0.45, delay: index * 0.18 }}
+                      />
+                    )
+                  })}
+                </>
+              )}
+              {!rotationSolved && nodes.length > 1 && (
+                <line
+                  x1={`${nodes[0].x}%`}
+                  y1={`${nodes[0].y}%`}
+                  x2={`${nodes[1].x}%`}
+                  y2={`${nodes[1].y}%`}
+                  stroke="rgba(251, 191, 36, 0.18)"
+                  strokeWidth="3"
+                  strokeDasharray="6 6"
+                />
+              )}
+            </svg>
 
-            return (
-              <div key={slotIndex} className="flex-1 flex flex-col items-center gap-1.5">
-                <motion.div
-                  className="relative w-full aspect-square max-w-[90px] rounded-sm border-2 flex flex-col items-center justify-center gap-1 cursor-pointer select-none"
+            {nodes.map((node, index) => {
+              const NodeIcon = getNodeIcon(node.type)
+              const isNodeCorrect = rotations[index] === node.correctRotation
+
+              return (
+                <motion.button
+                  key={node.id}
+                  type="button"
+                  onClick={() => handleRotateNode(index)}
+                  className="absolute grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-sm border-2"
                   style={{
-                    borderColor: isLit ? getStepBorder(slotIndex) : (placedItemIndex !== null ? 'rgba(74, 222, 128, 0.25)' : 'rgba(74, 222, 128, 0.08)'),
-                    backgroundColor: placedItemIndex !== null
-                      ? `rgba(74, 222, 128, 0.06)`
-                      : 'rgba(74, 222, 128, 0.02)',
-                    boxShadow: isLit
-                      ? `0 0 18px ${getStepBorder(slotIndex)}, inset 0 0 12px ${getStepBorder(slotIndex)}`
-                      : (placedItemIndex !== null ? '0 0 8px rgba(74, 222, 128, 0.08)' : 'none'),
+                    left: `${node.x}%`,
+                    top: `${node.y}%`,
+                    borderColor: isNodeCorrect ? 'rgba(251, 191, 36, 0.62)' : 'rgba(74, 222, 128, 0.28)',
+                    backgroundColor: isNodeCorrect ? 'rgba(251, 191, 36, 0.12)' : 'rgba(74, 222, 128, 0.05)',
+                    boxShadow: isNodeCorrect ? '0 0 24px rgba(251, 191, 36, 0.18)' : 'none',
+                    transform: `translate(-50%, -50%) rotate(${rotations[index]}deg)`,
                   }}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, slotIndex)}
-                  onClick={() => handleSlotClick(slotIndex)}
-                  animate={isShaking ? { x: [0, -4, 4, -4, 4, 0] } : {}}
-                  transition={isShaking ? { duration: 0.35 } : undefined}
-                  whileHover={!answered && placedItemIndex !== null ? { borderColor: 'rgba(239, 68, 68, 0.3)' } : undefined}
+                  whileHover={answered ? {} : { scale: 1.04 }}
+                  whileTap={answered ? {} : { scale: 0.97 }}
+                  disabled={answered}
                 >
-                  {placedItemIndex !== null && ItemIcon ? (
-                    <ItemIcon
-                      size={22}
-                      style={{ color: isLit ? getStepBorder(slotIndex) : 'rgba(74, 222, 128, 0.5)' }}
-                    />
-                  ) : (
-                    <span className="text-lg" style={{ color: 'rgba(74, 222, 128, 0.06)' }}>?</span>
-                  )}
-                  {placedItemIndex !== null && (
-                    <span
-                      className="text-[8px] leading-tight text-center px-1"
-                      style={{ color: isLit ? getStepBorder(slotIndex) : 'rgba(74, 222, 128, 0.35)' }}
-                    >
-                      {ac.items[placedItemIndex]}
-                    </span>
-                  )}
-                </motion.div>
-                <span className="text-[9px] tracking-wider" style={{ color: 'rgba(74, 222, 128, 0.3)' }}>
-                  PASO {slotIndex + 1}
-                </span>
-              </div>
-            )
-          })}
-        </div>
-      </div>
+                  <NodeIcon size={22} style={{ color: isNodeCorrect ? '#facc15' : '#86efac' }} />
+                  <span
+                    className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] uppercase tracking-wider"
+                    style={{ color: 'rgba(223, 233, 174, 0.6)', transform: `translateX(-50%) rotate(${-rotations[index]}deg)` }}
+                  >
+                    {node.label}
+                  </span>
+                  <span
+                    className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px]"
+                    style={{ color: 'rgba(251, 191, 36, 0.72)', transform: `translateX(-50%) rotate(${-rotations[index]}deg)` }}
+                  >
+                    {rotations[index]}°
+                  </span>
+                </motion.button>
+              )
+            })}
+          </div>
 
-      {/* Card pool */}
-      <div>
-        <div className="text-[10px] tracking-widest uppercase mb-2" style={{ color: 'rgba(74, 222, 128, 0.2)' }}>
-          PIEZAS DISPONIBLES
-        </div>
-        <div className="flex flex-wrap gap-2 min-h-[60px]">
-          {availableItems.length === 0 && !answered && (
-            <div className="w-full text-[10px] py-4 text-center" style={{ color: 'rgba(74, 222, 128, 0.15)' }}>
-              Todas las piezas colocadas
-            </div>
-          )}
-          {availableItems.map((itemIndex) => {
-            const item = ac.items[itemIndex]
-            const ItemIcon = getStepIcon(item)
-            return (
-              <div
-                key={itemIndex}
-                draggable={!answered}
-                onDragStart={(e: React.DragEvent) => handleDragStart(e, itemIndex)}
-                className="flex items-center gap-2 px-3 py-2 text-xs border rounded-sm cursor-grab active:cursor-grabbing select-none transition-all hover:scale-[1.03] active:scale-95"
+          <AnimatePresence>
+            {showFollowUp && (
+              <motion.div
+                className="mt-4 rounded-sm border p-4"
                 style={{
-                  borderColor: getStepBorder(itemIndex),
-                  color: 'rgba(134, 239, 172, 0.7)',
-                  backgroundColor: 'rgba(74, 222, 128, 0.04)',
-                  transition: 'transform 0.1s, border-color 0.15s',
+                  borderColor: 'rgba(251, 191, 36, 0.24)',
+                  backgroundColor: 'rgba(251, 191, 36, 0.06)',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = getStepBorder(itemIndex).replace('0.4', '0.6') }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = getStepBorder(itemIndex) }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
               >
-                <ItemIcon size={14} aria-hidden="true" />
-                {item}
-              </div>
-            )
-          })}
-        </div>
-      </div>
+                <div className="mb-3 text-sm leading-relaxed" style={{ color: '#fef3c7' }}>
+                  {ac.followUpQuestion}
+                </div>
+                <div className="flex flex-col gap-2">
+                  {ac.followUpOptions?.map((option, index) => {
+                    const selected = followUpSelected.includes(index)
 
-      {/* Actions */}
-      <div className="flex gap-3 items-center">
-        {placedIndices.length > 0 && !answered && (
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => handleFollowUpToggle(index)}
+                        className="w-full rounded-sm border px-4 py-3 text-left text-sm transition-all duration-150"
+                        style={{
+                          borderColor: selected ? 'rgba(251, 191, 36, 0.58)' : 'rgba(74, 222, 128, 0.18)',
+                          backgroundColor: selected ? 'rgba(251, 191, 36, 0.12)' : 'rgba(74, 222, 128, 0.03)',
+                          color: selected ? '#fef3c7' : 'rgba(134, 239, 172, 0.8)',
+                        }}
+                      >
+                        {option}
+                      </button>
+                    )
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      ) : (
+        <>
+          <div
+            className="relative rounded-sm border p-4 sm:p-6 pt-8 sm:pt-10 pb-6"
+            style={{
+              borderColor: 'rgba(74, 222, 128, 0.14)',
+              background: 'radial-gradient(ellipse at 50% 50%, rgba(74, 222, 128, 0.03), transparent 70%)',
+            }}
+          >
+            <svg className="absolute inset-0 pointer-events-none h-full w-full" style={{ opacity: 0.2 }}>
+              {[0, 1, 2].map((index) => {
+                const x1 = `${(index + 1) * 20 + 5}%`
+                const x2 = `${(index + 2) * 20 - 5}%`
+                const lit = answered && orderSolved && glowStep >= index + 1
+                return (
+                  <line
+                    key={index}
+                    x1={x1}
+                    y1="50%"
+                    x2={x2}
+                    y2="50%"
+                    stroke={lit ? 'rgba(74, 222, 128, 0.6)' : 'rgba(74, 222, 128, 0.1)'}
+                    strokeWidth="2"
+                    strokeDasharray="4 3"
+                  />
+                )
+              })}
+            </svg>
+
+            <div className="relative flex items-start justify-between gap-1 sm:gap-2">
+              {ac.correctOrder.map((_, slotIndex) => {
+                const placedItemIndex = slots[slotIndex]
+                const ItemIcon = placedItemIndex !== null ? getStepIcon(ac.items[placedItemIndex]) : undefined
+                const isShaking = shakeSlots.has(slotIndex)
+                const isLit = answered && orderSolved && glowStep >= slotIndex
+
+                return (
+                  <div key={slotIndex} className="flex flex-1 flex-col items-center gap-1.5">
+                    <motion.div
+                      className="relative flex aspect-square w-full max-w-[90px] cursor-pointer select-none flex-col items-center justify-center gap-1 rounded-sm border-2"
+                      style={{
+                        borderColor: isLit ? getStepBorder(slotIndex) : placedItemIndex !== null ? 'rgba(74, 222, 128, 0.25)' : 'rgba(74, 222, 128, 0.08)',
+                        backgroundColor: placedItemIndex !== null ? 'rgba(74, 222, 128, 0.06)' : 'rgba(74, 222, 128, 0.02)',
+                        boxShadow: isLit ? `0 0 18px ${getStepBorder(slotIndex)}, inset 0 0 12px ${getStepBorder(slotIndex)}` : placedItemIndex !== null ? '0 0 8px rgba(74, 222, 128, 0.08)' : 'none',
+                      }}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, slotIndex)}
+                      onClick={() => handleSlotClick(slotIndex)}
+                      animate={isShaking ? { x: [0, -4, 4, -4, 4, 0] } : {}}
+                      transition={isShaking ? { duration: 0.35 } : undefined}
+                      whileHover={!answered && placedItemIndex !== null ? { borderColor: 'rgba(239, 68, 68, 0.3)' } : undefined}
+                    >
+                      {placedItemIndex !== null && ItemIcon ? (
+                        <ItemIcon size={22} style={{ color: isLit ? getStepBorder(slotIndex) : 'rgba(74, 222, 128, 0.5)' }} />
+                      ) : (
+                        <span className="text-lg" style={{ color: 'rgba(74, 222, 128, 0.06)' }}>?</span>
+                      )}
+                      {placedItemIndex !== null && (
+                        <span className="px-1 text-center text-[8px] leading-tight" style={{ color: isLit ? getStepBorder(slotIndex) : 'rgba(74, 222, 128, 0.35)' }}>
+                          {ac.items[placedItemIndex]}
+                        </span>
+                      )}
+                    </motion.div>
+                    <span className="text-[9px] tracking-wider" style={{ color: 'rgba(74, 222, 128, 0.3)' }}>
+                      PASO {slotIndex + 1}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          <div>
+            <div className="mb-2 text-[10px] tracking-widest uppercase" style={{ color: 'rgba(74, 222, 128, 0.2)' }}>
+              PIEZAS DISPONIBLES
+            </div>
+            <div className="flex min-h-[60px] flex-wrap gap-2">
+              {availableItems.length === 0 && !answered && (
+                <div className="w-full py-4 text-center text-[10px]" style={{ color: 'rgba(74, 222, 128, 0.15)' }}>
+                  Todas las piezas colocadas
+                </div>
+              )}
+              {availableItems.map((itemIndex) => {
+                const item = ac.items[itemIndex]
+                const ItemIcon = getStepIcon(item)
+
+                return (
+                  <div
+                    key={itemIndex}
+                    draggable={!answered}
+                    onDragStart={(e) => handleDragStart(e, itemIndex)}
+                    className="flex cursor-grab select-none items-center gap-2 rounded-sm border px-3 py-2 text-xs transition-all hover:scale-[1.03] active:scale-95"
+                    style={{
+                      borderColor: getStepBorder(itemIndex),
+                      color: 'rgba(134, 239, 172, 0.7)',
+                      backgroundColor: 'rgba(74, 222, 128, 0.04)',
+                      transition: 'transform 0.1s, border-color 0.15s',
+                    }}
+                  >
+                    <ItemIcon size={14} aria-hidden="true" />
+                    {item}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </>
+      )}
+
+      <div className="flex items-center gap-3">
+        {((isRotationMode && !answered) || (!isRotationMode && placedIndices.length > 0 && !answered)) && (
           <motion.button
             onClick={handleReset}
             className="px-4 py-2 text-xs tracking-wider uppercase border"
@@ -272,19 +446,34 @@ export function RobotPathActivity({ activity, onComplete }: { activity: Activity
             REINICIAR
           </motion.button>
         )}
-        {isFilled && !answered && (
-          <motion.button
-            onClick={handleConfirm}
-            className="btn-compact px-5 py-2 sm:px-6 text-xs tracking-widest uppercase border"
-            style={{ color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.3)' }}
-            whileHover={{ scale: 1.02 }}
-          >
-            CONFIRMAR
-          </motion.button>
+        {isRotationMode ? (
+          !answered && (
+            <motion.button
+              onClick={handleConfirm}
+              className="btn-compact px-5 py-2 sm:px-6 text-xs tracking-widest uppercase border"
+              style={{
+                color: canConfirmRotation ? '#facc15' : 'rgba(250, 204, 21, 0.35)',
+                borderColor: canConfirmRotation ? 'rgba(250, 204, 21, 0.4)' : 'rgba(250, 204, 21, 0.14)',
+              }}
+              whileHover={canConfirmRotation ? { scale: 1.02 } : {}}
+            >
+              VALIDAR HAZ
+            </motion.button>
+          )
+        ) : (
+          isFilled && !answered && (
+            <motion.button
+              onClick={handleConfirm}
+              className="btn-compact px-5 py-2 sm:px-6 text-xs tracking-widest uppercase border"
+              style={{ color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.3)' }}
+              whileHover={{ scale: 1.02 }}
+            >
+              CONFIRMAR
+            </motion.button>
+          )
         )}
       </div>
 
-      {/* Feedback */}
       <AnimatePresence>
         {answered && (
           <motion.div
@@ -298,22 +487,21 @@ export function RobotPathActivity({ activity, onComplete }: { activity: Activity
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
           >
-            {/* Power-on animation for success */}
             {isCorrect && (
               <motion.div
                 className="mb-3 flex items-center gap-2 text-xs tracking-widest"
                 initial={{ opacity: 0 }}
                 animate={powerOn ? { opacity: 1 } : {}}
-                style={{ color: 'rgba(74, 222, 128, 0.6)' }}
+                style={{ color: isRotationMode ? 'rgba(250, 204, 21, 0.75)' : 'rgba(74, 222, 128, 0.6)' }}
               >
                 <motion.span
                   animate={{ rotate: 360 }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                   style={{ display: 'inline-block' }}
                 >
-                  <Bot size={16} />
+                  {isRotationMode ? <Sparkles size={16} /> : <Bot size={16} />}
                 </motion.span>
-                SISTEMA ACTIVADO
+                {isRotationMode ? 'HAZ FOTONICO ESTABLE' : 'SISTEMA ACTIVADO'}
               </motion.div>
             )}
             {isCorrect ? ac.feedback.success : ac.feedback.error}
@@ -325,6 +513,16 @@ export function RobotPathActivity({ activity, onComplete }: { activity: Activity
                 whileHover={{ scale: 1.02 }}
               >
                 CONTINUAR
+              </motion.button>
+            )}
+            {!isCorrect && (
+              <motion.button
+                onClick={handleReset}
+                className="btn-compact block mt-4 px-5 py-2 sm:px-6 text-xs tracking-widest uppercase border"
+                style={{ color: 'rgba(239, 68, 68, 0.8)', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                whileHover={{ scale: 1.02 }}
+              >
+                REINTENTAR
               </motion.button>
             )}
           </motion.div>

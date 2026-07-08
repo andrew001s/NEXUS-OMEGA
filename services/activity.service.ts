@@ -12,6 +12,9 @@ import { activity11 } from '@/activities/level-2/activity-11'
 import { activity12 } from '@/activities/level-2/activity-12'
 import { activity14 } from '@/activities/level-2/activity-14'
 import { activity15 } from '@/activities/level-2/activity-15'
+import { activity16 } from '@/activities/level-3/activity-16'
+import { activity18 } from '@/activities/level-3/activity-18'
+import { activity19 } from '@/activities/level-3/activity-19'
 
 const activities: Record<string, ActivityConfig> = {
   'activity-01': activity01,
@@ -27,6 +30,9 @@ const activities: Record<string, ActivityConfig> = {
   'activity-12': activity12,
   'activity-14': activity14,
   'activity-15': activity15,
+  'activity-16': activity16,
+  'activity-18': activity18,
+  'activity-19': activity19,
 }
 
 export function getActivityConfig(activityId: string): ActivityConfig | null {
