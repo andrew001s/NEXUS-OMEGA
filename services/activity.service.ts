@@ -10,7 +10,6 @@ import { activity09 } from '@/activities/level-5/activity-09'
 import { activity10 } from '@/activities/level-2/activity-10'
 import { activity11 } from '@/activities/level-2/activity-11'
 import { activity12 } from '@/activities/level-2/activity-12'
-import { activity13 } from '@/activities/level-2/activity-13'
 import { activity14 } from '@/activities/level-2/activity-14'
 import { activity15 } from '@/activities/level-2/activity-15'
 
@@ -26,7 +25,6 @@ const activities: Record<string, ActivityConfig> = {
   'activity-10': activity10,
   'activity-11': activity11,
   'activity-12': activity12,
-  'activity-13': activity13,
   'activity-14': activity14,
   'activity-15': activity15,
 }
