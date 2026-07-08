@@ -53,6 +53,14 @@ const lumenImage = new NarraLeafImage({
 const lumenCharacter = new NarraLeafCharacter('Dra. Lumen Solis')
 lumenCharacter.addPortrait(lumenImage)
 
+const voltImage = new NarraLeafImage({
+  name: 'Dr. Volt Faraday',
+  src: '/assets/sprites/volt.png',
+})
+
+const voltCharacter = new NarraLeafCharacter('Dr. Volt Faraday')
+voltCharacter.addPortrait(voltImage)
+
 export const SPEAKER_PROFILES: Record<string, SpeakerProfile> = {
   KIRA: {
     displayName: 'Dr.Kira Newton',
@@ -71,6 +79,12 @@ export const SPEAKER_PROFILES: Record<string, SpeakerProfile> = {
     spriteAlt: 'Dr.Atlas Vega',
     character: atlasCharacter,
     image: atlasImage,
+  },
+  VOLT: {
+    displayName: 'Dr. Volt Faraday',
+    spriteAlt: 'Dr. Volt Faraday',
+    character: voltCharacter,
+    image: voltImage,
   },
   SISTEMA: {
     displayName: 'SISTEMA',
