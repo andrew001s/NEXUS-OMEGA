@@ -38,7 +38,7 @@ export const finalLevel: LevelConfig = {
       id: 'cascada-energia',
       type: 'interactive',
       title: 'Cascada de Energia',
-      area: { x: 4, y: 49, width: 20, height: 48 },
+      area: { x: 1, y: 15, width: 26, height: 78 },
       unlockAfter: null,
       activityId: 'activity-28',
       visual: {
@@ -54,23 +54,24 @@ export const finalLevel: LevelConfig = {
       id: 'ecosistema-inteligente',
       type: 'interactive',
       title: 'Ecosistema Inteligente',
-      area: { x: 30, y: 50, width: 20, height: 48 },
+      area: { x: 23, y: 36, width: 18, height: 50 },
       unlockAfter: 'cascada-energia',
       activityId: 'activity-29',
       visual: {
         resource: '/assets/final-level/ecosistema.png',
-        transform: 'perspective(1000px) rotateZ(-1deg)',
+        transform: 'perspective(1000px) translateY(-8px) scale(0.88) rotateZ(-1deg)',
         transformOrigin: 'center center',
         fit: 'fill',
-        opacity: 1,
-        className: INTERACTIVE_OBJECT_STYLES.hoverDefault,
+        opacity: 0.9,
+        className:
+          `${INTERACTIVE_OBJECT_STYLES.hoverDefault} saturate-90 brightness-95 contrast-90 blur-[0.4px] drop-shadow-[0_8px_18px_rgba(0,0,0,0.12)]`,
       },
     },
     {
       id: 'laboratorio-transformaciones',
       type: 'interactive',
       title: 'Laboratorio de Transformaciones',
-      area: { x: 56, y: 50, width: 17, height: 48 },
+      area: { x: 60, y: 42, width: 18, height: 45 },
       unlockAfter: 'ecosistema-inteligente',
       activityId: 'activity-30',
       visual: {
@@ -86,7 +87,7 @@ export const finalLevel: LevelConfig = {
       id: 'nexus-omega',
       type: 'interactive',
       title: 'NEXUS Ω',
-      area: { x: 76, y: 38, width: 20, height: 60 },
+      area: { x: 76, y: 9, width: 25, height: 86 },
       unlockAfter: 'laboratorio-transformaciones',
       activityId: 'activity-31',
       visual: {
