@@ -228,7 +228,7 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
               ¿Seguro que quieres volver al menú principal?
             </p>
             <p className="text-xs sm:text-sm leading-relaxed" style={{ color: 'rgba(220, 252, 231, 0.72)' }}>
-              Tu progreso actual ya quedó guardado localmente. Si estás en medio de un desafío, tendrás que retomarlo desde el nivel.
+              Tu progreso dentro del nivel se perderá. Si estás en medio de un desafío, tendrás que retomarlo desde el nivel.
             </p>
           </div>
 
