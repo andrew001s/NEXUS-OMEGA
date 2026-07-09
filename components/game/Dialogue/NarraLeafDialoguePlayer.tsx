@@ -29,7 +29,7 @@ function NarraLeafDialogueContent() {
 
   return (
     <div
-      className="dialog-compact w-full max-w-5xl mx-auto min-h-44 p-6 sm:min-h-52 sm:p-8 border-[3px] cursor-pointer transition-all duration-150 hover:opacity-95"
+      className="dialog-compact w-full max-w-5xl mx-auto min-h-36 p-4 sm:min-h-52 sm:p-8 border-[3px] cursor-pointer transition-all duration-150 hover:opacity-95"
       style={{
         borderColor: 'rgba(145, 149, 88, 0.55)',
         backgroundColor: 'rgba(11, 13, 10, 0.96)',
@@ -71,7 +71,7 @@ function createDialogueUI() {
   return function NarraLeafDialogueUI() {
     return (
       <Dialog
-        className="absolute bottom-0 left-0 right-0 z-20 p-3 sm:p-6 max-h-[45vh] sm:max-h-[50vh] overflow-y-auto"
+        className="absolute bottom-0 left-0 right-0 z-20 p-2 sm:p-6 max-h-[40dvh] sm:max-h-[50vh] overflow-y-auto"
         style={{ fontFamily: '"Courier New", monospace' }}
       >
         <NarraLeafDialogueContent />
@@ -166,7 +166,7 @@ export function NarraLeafDialoguePlayer({ id, lines, onComplete }: NarraLeafDial
   }, [id, lines, handleComplete])
 
   return (
-    <div className="fixed inset-0 z-40">
+    <div className="fixed inset-0 z-40" style={{ maxHeight: '100dvh', overflow: 'hidden' }}>
       <GameProviders game={game}>
         {story && (
           <Player

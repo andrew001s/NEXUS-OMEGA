@@ -220,23 +220,25 @@ body {
 }
 
 /* ── Responsive: compact UI on short viewports (landscape mobile) ── */
-@media (max-height: 600px) {
+@media (max-height: 700px) {
   .dialog-compact {
-    min-height: 100px !important;
+    min-height: 80px !important;
+    max-height: 30dvh !important;
+    overflow-y: auto !important;
   }
   .dialog-compact .dialog-text {
-    font-size: 0.75rem !important;
+    font-size: 0.7rem !important;
     line-height: 1.2 !important;
-    min-height: 2em !important;
+    min-height: 1.5em !important;
   }
   .dialog-compact .dialog-continue {
-    font-size: 0.6rem !important;
-    margin-top: 0.1rem !important;
+    font-size: 0.55rem !important;
+    margin-top: 0.05rem !important;
   }
   .__narraleaf_content-player img[src*="/assets/sprites/"] {
-    max-height: 45vh !important;
+    max-height: 35dvh !important;
     width: auto !important;
-    filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.5)) !important;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5)) !important;
   }
   .activity-compact {
     gap: 0.35rem !important;

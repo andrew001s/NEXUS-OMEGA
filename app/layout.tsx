@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ServiceWorkerRegister } from "./ServiceWorkerRegister";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +18,21 @@ export const metadata: Metadata = {
   description:
     "Un videojuego educativo 2D. Explora un laboratorio abandonado invadido por la naturaleza y descubre los secretos del bosque.",
   keywords: ["videojuego", "educativo", "2D", "pixel art", "bosque", "naturaleza"],
+  appleWebApp: {
+    capable: true,
+    title: "Guardianes",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#050805",
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -29,6 +45,10 @@ export default function RootLayout({
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="mobile-web-app-capable" content="yes" />
+      </head>
       <body className="min-h-full flex flex-col bg-[#050805] text-[#e2e8f0]">
         <div
           className="rotate-device-overlay fixed inset-0 z-[9999] hidden flex-col items-center justify-center gap-4 bg-[#050805] p-6 text-center"
@@ -43,6 +63,7 @@ export default function RootLayout({
           </div>
         </div>
         {children}
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
