@@ -62,15 +62,48 @@ export function StoryPlayer({ onFinish }: StoryPlayerProps) {
         <motion.div
           key={scene.id}
           className="absolute inset-0 flex flex-col items-center justify-center"
-          style={{ background: scene.gradient }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: 'easeInOut' }}
         >
+            <motion.div
+              className="absolute inset-0"
+              initial={{
+                scale: scene.motion.fromScale,
+                x: scene.motion.fromX ?? '0%',
+                y: scene.motion.fromY ?? '0%',
+              }}
+              animate={{
+                scale: scene.motion.toScale,
+                x: scene.motion.toX ?? '0%',
+                y: scene.motion.toY ?? '0%',
+              }}
+              transition={{ duration: scene.duration / 1000, ease: 'linear' }}
+              style={{
+                backgroundImage: `url(${scene.backgroundImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                imageRendering: 'pixelated',
+                transformOrigin: 'center center',
+              }}
+            />
+
             <div
               className="absolute inset-0"
               style={{ backgroundColor: scene.overlayColor }}
+            />
+
+            <motion.div
+              className="absolute inset-0"
+              animate={{ opacity: [0.18, 0.32, 0.18] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+              style={{
+                background:
+                  'radial-gradient(circle at 50% 50%, rgba(120,255,220,0.14), transparent 45%)',
+                mixBlendMode: 'screen',
+              }}
             />
 
             <div
@@ -78,6 +111,18 @@ export function StoryPlayer({ onFinish }: StoryPlayerProps) {
               style={{
                 backgroundImage:
                   'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)',
+              }}
+            />
+
+            <motion.div
+              className="absolute inset-0 pointer-events-none"
+              animate={{ backgroundPosition: ['0px 0px', '48px 24px'] }}
+              transition={{ duration: 16, repeat: Infinity, ease: 'linear' }}
+              style={{
+                backgroundImage:
+                  'radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px)',
+                backgroundSize: '48px 24px',
+                opacity: 0.18,
               }}
             />
 
@@ -92,13 +137,14 @@ export function StoryPlayer({ onFinish }: StoryPlayerProps) {
               <motion.div
                 className="p-6 sm:p-8"
                 style={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.56)',
                   border: '1px solid rgba(74, 222, 128, 0.1)',
                   boxShadow: '0 0 40px rgba(0, 0, 0, 0.3)',
+                  backdropFilter: 'blur(1.5px)',
                 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={{ duration: 0.7, delay: 0.18 }}
               >
                 <div
                   className="whitespace-pre-line text-sm sm:text-base md:text-lg leading-relaxed font-bold"

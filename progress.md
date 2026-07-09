@@ -23,3 +23,7 @@ Original prompt: usa estas skills para mejorar el lock indicator, que no muestre
 - Refactored drag-order into declarative metadata with itemDetails, interactionMode, helper-panel copy, and empty-state messaging.
 - Extracted drag-order inference/shuffle helpers to components/game/Activities/dragOrder.shared.ts so the renderer no longer hardcodes domain-specific activity cases.
 - Rebuilt ctivity-29 as a guided ecosystem flow with explicit energy-transfer stages, richer hints, and clearer biological roles.
+
+- Replaced menu-story gradient backdrops with generated pixel-art scene images under public/backgrounds/story/ and wired them into StoryPlayer.
+- Added per-scene motion metadata in 	ypes/story.ts / data/story.ts so the intro now uses slow pan-zoom transitions instead of static color panels.
+- Kept readability with subtle overlays, scanlines, and a softer text panel while the story advances.
