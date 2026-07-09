@@ -30,3 +30,6 @@ Original prompt: usa estas skills para mejorar el lock indicator, que no muestre
 
 - Expanded the intro story into a fuller multi-scene prologue using the provided collapse narrative and conservation-law setup.
 - Adjusted StoryPlayer text rendering to preserve natural wrapping with wordBreak: keep-all, overflowWrap: break-word, and disabled hyphenation.
+
+- Added reusable end-of-level feedback and transition flow in pp/game/_components/LevelPageClient.tsx with learning recap, next-destination preview, auto-advance, and fade-out.
+- Simplified all six level pages to delegate navigation and completion UX through the shared level client component.

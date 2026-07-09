@@ -1,0 +1,297 @@
+'use client'
+
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowRight, CheckCircle2, FlaskConical, Lightbulb, Orbit, ShieldCheck, Sparkles, Zap } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { SceneEngine } from '@/components/game/SceneEngine/SceneEngine'
+import { getLevelConfig } from '@/services/level.service'
+import { useGameSave } from '@/hooks/useGameSave'
+
+type OutroTone = {
+  accent: string
+  glow: string
+  Icon: LucideIcon
+  headline: string
+  insight: string
+}
+
+const LEVEL_OUTRO_CONTENT: Record<string, OutroTone> = {
+  'level-1': {
+    accent: '#86efac',
+    glow: 'rgba(74, 222, 128, 0.28)',
+    Icon: Sparkles,
+    headline: 'Movimiento restaurado',
+    insight: 'Comprobaste que la energia del movimiento depende de la masa y la velocidad, y que puede activar sistemas completos.',
+  },
+  'level-2': {
+    accent: '#93c5fd',
+    glow: 'rgba(96, 165, 250, 0.28)',
+    Icon: Orbit,
+    headline: 'Equilibrio gravitacional recuperado',
+    insight: 'Entendiste que la posicion de un objeto puede almacenar energia y que la gravedad la transforma en movimiento util.',
+  },
+  'level-3': {
+    accent: '#fef08a',
+    glow: 'rgba(250, 204, 21, 0.25)',
+    Icon: Lightbulb,
+    headline: 'Ruta luminica reactivada',
+    insight: 'La luz vuelve a circular porque ahora reconoces como transporta energia y como puede convertirse en otras formas utiles.',
+  },
+  'level-4': {
+    accent: '#c4b5fd',
+    glow: 'rgba(192, 132, 252, 0.26)',
+    Icon: Zap,
+    headline: 'Flujo electrico estabilizado',
+    insight: 'Restauraste la red electrica comprendiendo como la corriente conecta tecnologia, dispositivos y nuevas transformaciones energeticas.',
+  },
+  'level-5': {
+    accent: '#f9a8d4',
+    glow: 'rgba(244, 114, 182, 0.24)',
+    Icon: FlaskConical,
+    headline: 'Laboratorio bioquimico despierto',
+    insight: 'La energia quimica vuelve a impulsar la vida y el laboratorio, dejando listo el camino hacia el Nucleo de Conservacion.',
+  },
+  'level-6': {
+    accent: '#fde68a',
+    glow: 'rgba(250, 204, 21, 0.26)',
+    Icon: ShieldCheck,
+    headline: 'Nucleo de Conservacion restaurado',
+    insight: 'Integraste materia, masa y energia para demostrar que comprender las transformaciones es la clave del equilibrio.',
+  },
+}
+
+const AUTO_ADVANCE_MS = 3600
+
+interface LevelPageClientProps {
+  levelId: string
+}
+
+export function LevelPageClient({ levelId }: LevelPageClientProps) {
+  const router = useRouter()
+  const { save, saveGame } = useGameSave()
+  const [showOutro, setShowOutro] = useState(false)
+  const [isLeaving, setIsLeaving] = useState(false)
+  const levelConfig = getLevelConfig(levelId)
+
+  const nextLevelConfig = useMemo(
+    () => (levelConfig?.nextLevel ? getLevelConfig(levelConfig.nextLevel) : null),
+    [levelConfig],
+  )
+
+  const outroTone = useMemo(
+    () => (levelConfig ? LEVEL_OUTRO_CONTENT[levelConfig.id] : null),
+    [levelConfig],
+  )
+
+  const completeAndNavigate = useCallback(() => {
+    if (!levelConfig || !save || isLeaving) return
+
+    setIsLeaving(true)
+    const nextId = levelConfig.nextLevel
+
+    saveGame({
+      ...save,
+      currentLevel: nextId ? parseInt(nextId.replace('level-', '')) : save.currentLevel,
+    })
+
+    window.setTimeout(() => {
+      if (nextId) {
+        router.push(`/game/${nextId}`)
+      } else {
+        router.push('/')
+      }
+    }, 850)
+  }, [isLeaving, levelConfig, router, save, saveGame])
+
+  useEffect(() => {
+    if (!showOutro || isLeaving) return
+
+    const timer = window.setTimeout(() => {
+      completeAndNavigate()
+    }, AUTO_ADVANCE_MS)
+
+    return () => window.clearTimeout(timer)
+  }, [showOutro, isLeaving, completeAndNavigate])
+
+  const handleLevelComplete = useCallback(() => {
+    if (!save) return
+    setShowOutro(true)
+  }, [save])
+
+  if (!levelConfig || !outroTone) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        <p
+          className="text-sm tracking-widest"
+          style={{ color: 'rgba(239, 68, 68, 0.5)', fontFamily: '"Courier New", monospace' }}
+        >
+          Error: nivel no encontrado
+        </p>
+      </div>
+    )
+  }
+
+  const { Icon } = outroTone
+
+  return (
+    <>
+      <SceneEngine levelConfig={levelConfig} onLevelComplete={handleLevelComplete} />
+
+      <AnimatePresence>
+        {showOutro && (
+          <motion.div
+            className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{ backgroundColor: 'rgba(2, 6, 4, 0.72)', backdropFilter: 'blur(6px)' }}
+          >
+            <motion.div
+              className="w-full max-w-3xl overflow-hidden border p-5 sm:p-7"
+              initial={{ opacity: 0, scale: 0.96, y: 24 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.98, y: -10 }}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
+              style={{
+                borderColor: `${outroTone.accent}66`,
+                background:
+                  'linear-gradient(160deg, rgba(6,11,9,0.96), rgba(12,24,19,0.95) 52%, rgba(8,15,12,0.98))',
+                boxShadow: `0 0 50px ${outroTone.glow}, inset 0 0 0 1px rgba(255,255,255,0.03)`,
+                fontFamily: '"Courier New", monospace',
+              }}
+            >
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex items-start gap-4">
+                  <div
+                    className="grid h-14 w-14 place-items-center rounded-full border"
+                    style={{
+                      borderColor: `${outroTone.accent}88`,
+                      backgroundColor: `${outroTone.accent}18`,
+                      color: outroTone.accent,
+                    }}
+                  >
+                    <Icon size={28} aria-hidden="true" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-[11px] uppercase tracking-[0.24em]" style={{ color: 'rgba(223, 233, 174, 0.5)' }}>
+                      Retroalimentacion del nivel
+                    </div>
+                    <h2 className="text-xl sm:text-2xl font-bold" style={{ color: '#ecfccb' }}>
+                      {outroTone.headline}
+                    </h2>
+                    <p className="max-w-xl text-sm sm:text-base leading-relaxed" style={{ color: 'rgba(220, 252, 231, 0.82)' }}>
+                      {outroTone.insight}
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="inline-flex items-center gap-2 self-start border px-3 py-2 text-[11px] uppercase tracking-[0.18em]"
+                  style={{
+                    borderColor: `${outroTone.accent}44`,
+                    color: outroTone.accent,
+                    backgroundColor: `${outroTone.accent}12`,
+                  }}
+                >
+                  <CheckCircle2 size={14} aria-hidden="true" />
+                  <span>{levelConfig.title}</span>
+                </div>
+              </div>
+
+              <div className="mt-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+                <div
+                  className="rounded-sm border p-4"
+                  style={{
+                    borderColor: 'rgba(134, 239, 172, 0.14)',
+                    backgroundColor: 'rgba(74, 222, 128, 0.04)',
+                  }}
+                >
+                  <div className="text-[11px] uppercase tracking-[0.22em]" style={{ color: 'rgba(223, 233, 174, 0.45)' }}>
+                    Lo que restauraste
+                  </div>
+                  <ul className="mt-3 space-y-2 text-sm leading-relaxed" style={{ color: '#d9f99d' }}>
+                    <li>- Completaste {levelConfig.interactiveObjects.length} desafios del sector.</li>
+                    <li>- Reforzaste una forma clave de transformacion energetica.</li>
+                    <li>- Dejaste el laboratorio listo para seguir avanzando.</li>
+                  </ul>
+                </div>
+
+                <div
+                  className="rounded-sm border p-4"
+                  style={{
+                    borderColor: `${outroTone.accent}44`,
+                    backgroundColor: `${outroTone.accent}12`,
+                  }}
+                >
+                  <div className="text-[11px] uppercase tracking-[0.22em]" style={{ color: 'rgba(223, 233, 174, 0.45)' }}>
+                    Siguiente destino
+                  </div>
+                  <div className="mt-3 flex items-center gap-3" style={{ color: '#ecfccb' }}>
+                    <ArrowRight size={18} aria-hidden="true" />
+                    <span className="text-sm sm:text-base font-bold">
+                      {nextLevelConfig ? nextLevelConfig.title : 'Cierre de expedicion'}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs sm:text-sm leading-relaxed" style={{ color: 'rgba(220, 252, 231, 0.72)' }}>
+                    {nextLevelConfig
+                      ? `Transicionando al ${nextLevelConfig.id.replace('-', ' ')} para continuar la restauracion.`
+                      : 'La expedicion concluye. Es momento de volver al laboratorio central.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-3">
+                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.2em]" style={{ color: 'rgba(223, 233, 174, 0.42)' }}>
+                  <span>{isLeaving ? 'Abriendo siguiente escena...' : 'Preparando transicion natural...'}</span>
+                  <span>{Math.ceil(AUTO_ADVANCE_MS / 1000)}s auto</span>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full" style={{ backgroundColor: 'rgba(134, 239, 172, 0.08)' }}>
+                  <motion.div
+                    className="h-full rounded-full"
+                    initial={{ width: '0%' }}
+                    animate={{ width: '100%' }}
+                    transition={{ duration: AUTO_ADVANCE_MS / 1000, ease: 'linear' }}
+                    style={{ background: `linear-gradient(90deg, ${outroTone.accent}66, ${outroTone.accent})` }}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <motion.button
+                  onClick={completeAndNavigate}
+                  disabled={isLeaving}
+                  className="px-5 py-2 text-xs tracking-[0.22em] uppercase border"
+                  style={{
+                    color: outroTone.accent,
+                    borderColor: `${outroTone.accent}66`,
+                    backgroundColor: `${outroTone.accent}14`,
+                  }}
+                  whileHover={{ scale: isLeaving ? 1 : 1.02 }}
+                  whileTap={{ scale: isLeaving ? 1 : 0.98 }}
+                >
+                  {nextLevelConfig ? 'Continuar al siguiente nivel' : 'Volver al inicio'}
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isLeaving && (
+          <motion.div
+            className="fixed inset-0 z-[90] pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            style={{ background: 'linear-gradient(180deg, rgba(4,8,6,0), rgba(4,8,6,0.88) 60%, rgba(0,0,0,1))' }}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
