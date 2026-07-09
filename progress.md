@@ -27,3 +27,6 @@ Original prompt: usa estas skills para mejorar el lock indicator, que no muestre
 - Replaced menu-story gradient backdrops with generated pixel-art scene images under public/backgrounds/story/ and wired them into StoryPlayer.
 - Added per-scene motion metadata in 	ypes/story.ts / data/story.ts so the intro now uses slow pan-zoom transitions instead of static color panels.
 - Kept readability with subtle overlays, scanlines, and a softer text panel while the story advances.
+
+- Expanded the intro story into a fuller multi-scene prologue using the provided collapse narrative and conservation-law setup.
+- Adjusted StoryPlayer text rendering to preserve natural wrapping with wordBreak: keep-all, overflowWrap: break-word, and disabled hyphenation.

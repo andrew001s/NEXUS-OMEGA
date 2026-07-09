@@ -133,7 +133,7 @@ export function StoryPlayer({ onFinish }: StoryPlayerProps) {
               }}
             />
 
-            <div className="relative z-10 w-full max-w-2xl px-6 sm:px-8">
+            <div className="relative z-10 w-full max-w-4xl px-5 sm:px-8 lg:px-10">
               <motion.div
                 className="p-6 sm:p-8"
                 style={{
@@ -147,12 +147,17 @@ export function StoryPlayer({ onFinish }: StoryPlayerProps) {
                 transition={{ duration: 0.7, delay: 0.18 }}
               >
                 <div
-                  className="whitespace-pre-line text-sm sm:text-base md:text-lg leading-relaxed font-bold"
+                  className="story-prologue-text whitespace-pre-line text-sm sm:text-base lg:text-lg leading-relaxed font-bold"
                   style={{
                     color: '#86efac',
                     fontFamily: '"Courier New", monospace',
                     textShadow: '0 0 20px rgba(74, 222, 128, 0.15)',
                     minHeight: '4em',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'normal',
+                    overflowWrap: 'normal',
+                    hyphens: 'manual',
+                    textWrap: 'pretty',
                   }}
                 >
                   <TextsPreview
@@ -163,7 +168,14 @@ export function StoryPlayer({ onFinish }: StoryPlayerProps) {
                     defaultColor="#86efac"
                     fontFamily='"Courier New", monospace'
                     fontWeight={700}
-                    className="whitespace-pre-line leading-relaxed"
+                    className="story-prologue-text whitespace-pre-line leading-relaxed"
+                    style={{
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'normal',
+                      overflowWrap: 'normal',
+                      hyphens: 'manual',
+                      textWrap: 'pretty',
+                    }}
                     onCompleted={() => setTextComplete(true)}
                   />
                 </div>

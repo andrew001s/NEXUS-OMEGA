@@ -44,6 +44,21 @@ body {
   display: inline !important;
 }
 
+.story-prologue-text,
+.story-prologue-text * {
+  white-space: pre-wrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  line-break: auto !important;
+  hyphens: manual !important;
+}
+
+.story-prologue-text span,
+.story-prologue-text p,
+.story-prologue-text div {
+  display: inline !important;
+}
+
 .__narraleaf_content-player img[src*="/assets/sprites/"] {
   animation: visual-novel-character-breathe 5s ease-in-out 400ms infinite;
   filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.56));
