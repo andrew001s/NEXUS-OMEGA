@@ -1,10 +1,29 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef, useReducer } from 'react'
+import { useState, useCallback, useEffect, useRef, useReducer, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, Timer, Trophy, XCircle, Zap } from 'lucide-react'
 import type { ActivityComponentProps, ActivityConfig, BossQuizQuestion } from '@/types/activity'
 import { useActivityMetrics } from '@/hooks/useActivityMetrics'
+
+function shuffleOptions(options: string[], correctIndex: number) {
+  const entries = options.map((option, index) => ({
+    option,
+    isCorrect: index === correctIndex,
+  }))
+
+  for (let index = entries.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1))
+    const current = entries[index]
+    entries[index] = entries[swapIndex]
+    entries[swapIndex] = current
+  }
+
+  return {
+    options: entries.map((entry) => entry.option),
+    correctIndex: entries.findIndex((entry) => entry.isCorrect),
+  }
+}
 
 function QuestionCard({
   question,
@@ -22,6 +41,10 @@ function QuestionCard({
   const [timeLeft, setTimeLeft] = useState(timePerQuestion)
   const answeredRef = useRef(false)
   const id = `Q${questionNum}`
+  const shuffledQuestion = useMemo(
+    () => shuffleOptions(question.options, question.correctIndex),
+    [question.correctIndex, question.options],
+  )
 
   useEffect(() => {
     if (answeredRef.current) return
@@ -55,11 +78,11 @@ function QuestionCard({
       if (answeredRef.current) {
         return
       }
-      const correct = index === question.correctIndex
+      const correct = index === shuffledQuestion.correctIndex
       answeredRef.current = true
       onAnswer(correct)
     },
-    [question.correctIndex, onAnswer],
+    [onAnswer, shuffledQuestion.correctIndex],
   )
 
   return (
@@ -99,7 +122,7 @@ function QuestionCard({
       </p>
 
       <div className="flex flex-col gap-2">
-        {question.options.map((option, i) => (
+        {shuffledQuestion.options.map((option, i) => (
           <motion.button
             key={i}
             onClick={() => handleSelect(i)}

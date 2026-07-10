@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Bike, Box, Car, Circle, Gauge, Mountain, Zap } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -20,11 +20,31 @@ function getOptionIcon(option: string): LucideIcon {
   return Circle
 }
 
+function shuffleOptions(options: string[], correctIndex: number) {
+  const entries = options.map((option, index) => ({
+    option,
+    isCorrect: index === correctIndex,
+  }))
+
+  for (let index = entries.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1))
+    const current = entries[index]
+    entries[index] = entries[swapIndex]
+    entries[swapIndex] = current
+  }
+
+  return {
+    options: entries.map((entry) => entry.option),
+    correctIndex: entries.findIndex((entry) => entry.isCorrect),
+  }
+}
+
 export function MultipleChoiceActivity({ activity, onComplete }: ActivityComponentProps) {
   const [selected, setSelected] = useState<number | null>(null)
   const [answered, setAnswered] = useState(false)
   const ac = activity as Extract<ActivityConfig, { type: 'multiple-choice' }>
   const { buildCompletion, registerInteraction, registerMistake, registerRetry } = useActivityMetrics(ac)
+  const shuffledQuestion = useMemo(() => shuffleOptions(ac.options, ac.correctIndex), [ac.correctIndex, ac.options])
 
   const handleSelect = useCallback(
     (index: number) => {
@@ -38,11 +58,11 @@ export function MultipleChoiceActivity({ activity, onComplete }: ActivityCompone
   const handleConfirm = useCallback(() => {
     if (selected === null) return
     registerInteraction()
-    if (selected !== ac.correctIndex) {
+    if (selected !== shuffledQuestion.correctIndex) {
       registerMistake()
     }
     setAnswered(true)
-  }, [ac.correctIndex, registerInteraction, registerMistake, selected])
+  }, [registerInteraction, registerMistake, selected, shuffledQuestion.correctIndex])
 
   const handleRetry = useCallback(() => {
     registerRetry()
@@ -50,7 +70,7 @@ export function MultipleChoiceActivity({ activity, onComplete }: ActivityCompone
     setSelected(null)
   }, [registerRetry])
 
-  const isCorrect = selected === ac.correctIndex
+  const isCorrect = selected === shuffledQuestion.correctIndex
 
   return (
     <div
@@ -90,7 +110,7 @@ export function MultipleChoiceActivity({ activity, onComplete }: ActivityCompone
       </div>
 
       <div className="flex flex-col gap-2">
-        {ac.options.map((option, i) => {
+        {shuffledQuestion.options.map((option, i) => {
           const OptionIcon = getOptionIcon(option)
           let borderColor = 'rgba(74, 222, 128, 0.2)'
           let bgColor = 'rgba(74, 222, 128, 0.03)'
@@ -98,7 +118,7 @@ export function MultipleChoiceActivity({ activity, onComplete }: ActivityCompone
           let glow = 'none'
 
           if (answered) {
-            if (i === ac.correctIndex) {
+            if (i === shuffledQuestion.correctIndex) {
               borderColor = 'rgba(74, 222, 128, 0.6)'
               bgColor = 'rgba(74, 222, 128, 0.1)'
               textColor = '#4ade80'
