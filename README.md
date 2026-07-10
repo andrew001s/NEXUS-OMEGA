@@ -20,7 +20,7 @@ El proyecto combina:
 
 ## Vista rápida
 
-![Pantalla inicial](public/backgrounds/start.png)
+![Gameplay preview](public/readme/gameplay-preview.gif)
 
 ## Demo del juego
 
@@ -43,6 +43,28 @@ El proyecto combina:
 ### Nivel final — Núcleo de Conservación
 
 ![Nivel final](public/backgrounds/final-level.png)
+
+## Cómo jugar
+
+1. Presiona `Nuevo Juego`.
+2. Escribe el nombre del jugador.
+3. Mira la introducción narrativa.
+4. Toca o haz clic en los objetos interactivos desbloqueados.
+5. Resuelve cada actividad para restaurar el sector.
+6. Revisa el resumen del nivel y sigue al siguiente.
+
+### Controles
+
+- `Click / tap` para interactuar con escenario y diálogos
+- `Arrastrar`, `seleccionar` o `mover slider` según la actividad
+- `Control de volumen` en la esquina superior
+- `Salir` para volver al menú principal
+
+### Consejos
+
+- En mobile, úsalo en horizontal.
+- En Android web, instala la PWA para mejor experiencia.
+- Si no configuras Firebase, puedes jugar normalmente con guardado local.
 
 ## Stack
 
@@ -143,6 +165,30 @@ Más detalle en `docs/ARCHITECTURE.md`.
 6. El sistema calcula score, rachas, bonus y progreso acumulado.
 7. Al completar el nivel se muestra un resumen y se sincroniza el progreso.
 
+## Flujo del usuario
+
+```text
+Menú principal
+  -> Nuevo Juego
+  -> Nombre del jugador
+  -> Historia inicial
+  -> Nivel 1
+  -> Actividades y progreso
+  -> Resumen de nivel
+  -> Siguiente nivel
+  -> ...
+  -> Nivel final
+  -> Cierre de campaña
+
+Menú principal
+  -> Continuar
+  -> Último nivel guardado
+
+Menú principal
+  -> Tabla de puntuación
+  -> Consulta del leaderboard
+```
+
 ## Persistencia
 
 ### Local
@@ -173,6 +219,7 @@ Si Firebase está disponible:
 ## Capturas y material visual
 
 Por ahora el README reutiliza fondos reales del proyecto almacenados en `public/backgrounds/`.  
+
 
 ## Logros
 
@@ -224,5 +271,4 @@ El proyecto ya incluye:
 ## Contribución
 
 Si vas a colaborar, revisa primero `CONTRIBUTING.md`.
-
 
