@@ -68,6 +68,7 @@ const LEVEL_OUTRO_CONTENT: Record<string, OutroTone> = {
 }
 
 const AUTO_ADVANCE_MS = 3600
+const INITIAL_LEVEL_LOADER_MS = 900
 
 interface LevelPageClientProps {
   levelId: string
@@ -76,6 +77,7 @@ interface LevelPageClientProps {
 export function LevelPageClient({ levelId }: LevelPageClientProps) {
   const router = useRouter()
   const { save, saveGame } = useGameSave()
+  const [isBooting, setIsBooting] = useState(true)
   const [showOutro, setShowOutro] = useState(false)
   const [isLeaving, setIsLeaving] = useState(false)
   const [showExitConfirm, setShowExitConfirm] = useState(false)
@@ -92,6 +94,20 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
     () => (levelConfig ? LEVEL_OUTRO_CONTENT[levelConfig.id] : null),
     [levelConfig],
   )
+
+  useEffect(() => {
+    setIsBooting(true)
+    const timer = window.setTimeout(() => {
+      setIsBooting(false)
+    }, INITIAL_LEVEL_LOADER_MS)
+
+    return () => window.clearTimeout(timer)
+  }, [levelId])
+
+  useEffect(() => {
+    if (!levelConfig?.nextLevel) return
+    router.prefetch(`/game/${levelConfig.nextLevel}`)
+  }, [levelConfig?.nextLevel, router])
 
   const completeAndNavigate = useCallback(() => {
     if (!levelConfig || !save || isLeaving) return
@@ -278,7 +294,7 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
             style={{ backgroundColor: 'rgba(2, 6, 4, 0.72)', backdropFilter: 'blur(6px)' }}
           >
             <motion.div
-              className="w-full max-w-3xl overflow-hidden border p-5 sm:p-7"
+              className="w-full max-w-3xl max-h-[88dvh] overflow-y-auto border p-4 sm:p-7"
               initial={{ opacity: 0, scale: 0.96, y: 24 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98, y: -10 }}
@@ -291,30 +307,30 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
                 fontFamily: '"Courier New", monospace',
               }}
             >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex items-start gap-4">
                   <div
-                    className="grid h-14 w-14 place-items-center rounded-full border"
+                    className="grid h-11 w-11 sm:h-14 sm:w-14 place-items-center rounded-full border shrink-0"
                     style={{
                       borderColor: `${outroTone.accent}88`,
                       backgroundColor: `${outroTone.accent}18`,
                       color: outroTone.accent,
                     }}
                   >
-                    <Icon size={28} aria-hidden="true" />
+                    <Icon size={22} aria-hidden="true" />
                   </div>
                   <div className="space-y-2">
                     <div className="text-[11px] uppercase tracking-[0.24em]" style={{ color: 'rgba(223, 233, 174, 0.5)' }}>
                       Retroalimentacion del nivel
                     </div>
-                    <h2 className="text-xl sm:text-2xl font-bold" style={{ color: '#ecfccb' }}>
+                    <h2 className="text-lg sm:text-2xl font-bold" style={{ color: '#ecfccb' }}>
                       {outroTone.headline}
                     </h2>
-                    <p className="max-w-xl text-sm sm:text-base leading-relaxed" style={{ color: 'rgba(220, 252, 231, 0.82)' }}>
+                    <p className="max-w-xl text-xs sm:text-base leading-relaxed" style={{ color: 'rgba(220, 252, 231, 0.82)' }}>
                       {outroTone.insight}
                     </p>
                     {levelSummary && (
-                      <div className="mt-3 flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em]">
+                      <div className="mt-2 flex flex-wrap gap-2 text-[10px] sm:text-[11px] uppercase tracking-[0.18em]">
                         <span className="inline-flex items-center gap-2 border px-3 py-2" style={{ borderColor: `${outroTone.accent}33`, color: '#fef08a', backgroundColor: 'rgba(250, 204, 21, 0.08)' }}>
                           <Trophy size={13} aria-hidden="true" />
                           +{levelSummary.earnedScore} puntos
@@ -341,9 +357,9 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+              <div className="mt-4 sm:mt-6 grid gap-3 sm:gap-4 lg:grid-cols-[1.2fr_0.8fr]">
                 <div
-                  className="rounded-sm border p-4"
+                  className="rounded-sm border p-3 sm:p-4"
                   style={{
                     borderColor: 'rgba(134, 239, 172, 0.14)',
                     backgroundColor: 'rgba(74, 222, 128, 0.04)',
@@ -352,7 +368,7 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
                   <div className="text-[11px] uppercase tracking-[0.22em]" style={{ color: 'rgba(223, 233, 174, 0.45)' }}>
                     Lo que restauraste
                   </div>
-                  <ul className="mt-3 space-y-2 text-sm leading-relaxed" style={{ color: '#d9f99d' }}>
+                  <ul className="mt-2 sm:mt-3 space-y-1.5 sm:space-y-2 text-xs sm:text-sm leading-relaxed" style={{ color: '#d9f99d' }}>
                     <li>- Completaste {levelConfig.interactiveObjects.length} desafios del sector.</li>
                     <li>- Reforzaste una forma clave de transformacion energetica.</li>
                     <li>- Dejaste el laboratorio listo para seguir avanzando.</li>
@@ -361,7 +377,7 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
                 </div>
 
                 <div
-                  className="rounded-sm border p-4"
+                  className="rounded-sm border p-3 sm:p-4"
                   style={{
                     borderColor: `${outroTone.accent}44`,
                     backgroundColor: `${outroTone.accent}12`,
@@ -372,11 +388,11 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
                   </div>
                   <div className="mt-3 flex items-center gap-3" style={{ color: '#ecfccb' }}>
                     <ArrowRight size={18} aria-hidden="true" />
-                    <span className="text-sm sm:text-base font-bold">
+                    <span className="text-xs sm:text-base font-bold">
                       {nextLevelConfig ? nextLevelConfig.title : 'Cierre de expedicion'}
                     </span>
                   </div>
-                  <p className="mt-2 text-xs sm:text-sm leading-relaxed" style={{ color: 'rgba(220, 252, 231, 0.72)' }}>
+                  <p className="mt-2 text-[11px] sm:text-sm leading-relaxed" style={{ color: 'rgba(220, 252, 231, 0.72)' }}>
                     {nextLevelConfig
                       ? `Transicionando al ${nextLevelConfig.id.replace('-', ' ')} para continuar la restauracion.`
                       : 'La expedicion concluye. Es momento de volver al laboratorio central.'}
@@ -385,13 +401,13 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
               </div>
 
               {levelSummary && (
-                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="mt-4 grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-3">
                   <div className="rounded-sm border p-3" style={{ borderColor: 'rgba(74, 222, 128, 0.14)', backgroundColor: 'rgba(74, 222, 128, 0.04)' }}>
                     <div className="mb-2 flex items-center gap-2 text-[11px] uppercase tracking-[0.18em]" style={{ color: 'rgba(223, 233, 174, 0.45)' }}>
                       <Trophy size={13} aria-hidden="true" />
                       Puntuacion
                     </div>
-                    <div className="text-xl font-bold" style={{ color: '#fef08a' }}>
+                    <div className="text-lg sm:text-xl font-bold" style={{ color: '#fef08a' }}>
                       {levelSummary.score.toLocaleString()}
                     </div>
                     <div className="text-[11px]" style={{ color: 'rgba(220, 252, 231, 0.62)' }}>
@@ -404,7 +420,7 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
                       <Star size={13} aria-hidden="true" />
                       Cadena perfecta
                     </div>
-                    <div className="text-xl font-bold" style={{ color: '#d9f99d' }}>
+                    <div className="text-lg sm:text-xl font-bold" style={{ color: '#d9f99d' }}>
                       {levelSummary.perfectCount}/{levelSummary.activityCount}
                     </div>
                     <div className="text-[11px]" style={{ color: 'rgba(220, 252, 231, 0.62)' }}>
@@ -412,12 +428,12 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
                     </div>
                   </div>
 
-                  <div className="rounded-sm border p-3" style={{ borderColor: 'rgba(74, 222, 128, 0.14)', backgroundColor: 'rgba(74, 222, 128, 0.04)' }}>
+                  <div className="rounded-sm border p-3 col-span-2 sm:col-span-1" style={{ borderColor: 'rgba(74, 222, 128, 0.14)', backgroundColor: 'rgba(74, 222, 128, 0.04)' }}>
                     <div className="mb-2 flex items-center gap-2 text-[11px] uppercase tracking-[0.18em]" style={{ color: 'rgba(223, 233, 174, 0.45)' }}>
                       <TimerReset size={13} aria-hidden="true" />
                       Bonus
                     </div>
-                    <div className="text-xl font-bold" style={{ color: '#86efac' }}>
+                    <div className="text-lg sm:text-xl font-bold" style={{ color: '#86efac' }}>
                       +{(levelSummary.levelBonus + levelSummary.perfectChainBonus).toLocaleString()}
                     </div>
                     <div className="text-[11px]" style={{ color: 'rgba(220, 252, 231, 0.62)' }}>
@@ -433,7 +449,7 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
                 </div>
               )}
 
-              <div className="mt-6 space-y-3">
+              <div className="mt-5 sm:mt-6 space-y-3">
                 <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.2em]" style={{ color: 'rgba(223, 233, 174, 0.42)' }}>
                   <span>{isLeaving ? 'Abriendo siguiente escena...' : 'Preparando transicion natural...'}</span>
                   <span>{Math.ceil(AUTO_ADVANCE_MS / 1000)}s auto</span>
@@ -449,11 +465,11 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
                 </div>
               </div>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-5 sm:mt-6 flex flex-wrap gap-3">
                 <motion.button
                   onClick={completeAndNavigate}
                   disabled={isLeaving}
-                  className="px-5 py-2 text-xs tracking-[0.22em] uppercase border"
+                  className="w-full sm:w-auto px-5 py-2 text-[11px] sm:text-xs tracking-[0.22em] uppercase border"
                   style={{
                     color: outroTone.accent,
                     borderColor: `${outroTone.accent}66`,
@@ -471,15 +487,41 @@ export function LevelPageClient({ levelId }: LevelPageClientProps) {
       </AnimatePresence>
 
       <AnimatePresence>
-        {isLeaving && (
+        {(isLeaving || isBooting) && (
           <motion.div
-            className="fixed inset-0 z-[90] pointer-events-none"
+            className="fixed inset-0 z-[90] flex items-center justify-center pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8 }}
-            style={{ background: 'linear-gradient(180deg, rgba(4,8,6,0), rgba(4,8,6,0.88) 60%, rgba(0,0,0,1))' }}
-          />
+            style={{ background: 'linear-gradient(180deg, rgba(4,8,6,0.22), rgba(4,8,6,0.88) 60%, rgba(0,0,0,1))' }}
+          >
+            <motion.div
+              className="flex flex-col items-center gap-4 px-5 py-4 border"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              style={{
+                borderColor: 'rgba(134, 239, 172, 0.25)',
+                backgroundColor: 'rgba(5, 8, 5, 0.92)',
+                boxShadow: '0 18px 40px rgba(0, 0, 0, 0.45)',
+                fontFamily: '"Courier New", monospace',
+              }}
+            >
+              <motion.div
+                className="h-10 w-10 rounded-full border"
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
+                style={{
+                  borderColor: 'rgba(134, 239, 172, 0.55)',
+                  borderTopColor: 'rgba(134, 239, 172, 0.12)',
+                }}
+              />
+              <div className="text-[11px] uppercase tracking-[0.22em]" style={{ color: '#d9f99d' }}>
+                {isLeaving ? 'Cargando siguiente nivel...' : 'Preparando laboratorio...'}
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
